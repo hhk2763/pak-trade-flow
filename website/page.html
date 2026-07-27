@@ -1,0 +1,342 @@
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-surface-variant":"#45464d","surface-variant":"#d3e4fe","secondary-fixed-dim":"#6bd8cb","inverse-on-surface":"#eaf1ff","on-primary-fixed-variant":"#3f465c","on-tertiary-fixed-variant":"#653e00","on-secondary":"#ffffff","on-secondary-container":"#006f66","tertiary":"#000000","tertiary-container":"#2a1700","inverse-surface":"#213145","on-secondary-fixed":"#00201d","on-primary-container":"#7c839b","tertiary-fixed":"#ffddb8","surface-container-low":"#eff4ff","surface-container-high":"#dce9ff","background":"#f8f9ff","on-surface":"#0b1c30","on-primary":"#ffffff","surface":"#f8f9ff","inverse-primary":"#bec6e0","on-tertiary":"#ffffff","surface-dim":"#cbdbf5","secondary-fixed":"#89f5e7","secondary-container":"#86f2e4","primary":"#000000","on-error-container":"#93000a","error":"#ba1a1a","surface-container":"#e5eeff","surface-container-highest":"#d3e4fe","on-secondary-fixed-variant":"#005049","outline-variant":"#c6c6cd","surface-bright":"#f8f9ff","on-error":"#ffffff","surface-container-lowest":"#ffffff","outline":"#76777d","on-primary-fixed":"#131b2e","secondary":"#006a61","primary-container":"#131b2e","error-container":"#ffdad6","primary-fixed":"#dae2fd","on-tertiary-fixed":"#2a1700","on-background":"#0b1c30","primary-fixed-dim":"#bec6e0","surface-tint":"#565e74","tertiary-fixed-dim":"#ffb95f","on-tertiary-container":"#b87500"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"md":"16px","lg":"24px","container-max":"1440px","base":"4px","sm":"8px","xs":"4px","gutter":"20px","xl":"32px"},"fontFamily":{"headline-sm":["Inter"],"label-caps":["Inter"],"body-lg":["Inter"],"body-md":["Inter"],"data-tabular":["JetBrains Mono"],"headline-md":["Inter"],"display-lg":["Inter"]},"fontSize":{"headline-sm":["18px",{"lineHeight":"24px","fontWeight":"600"}],"label-caps":["11px",{"lineHeight":"16px","letterSpacing":"0.05em","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"data-tabular":["13px",{"lineHeight":"16px","fontWeight":"500"}],"headline-md":["24px",{"lineHeight":"32px","fontWeight":"600"}],"display-lg":["36px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"700"}]}}}}</script><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/></head><body class="bg-background font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col border-r border-outline-variant"><div class="px-lg py-xl flex items-center gap-sm">
+<div class="h-[48px] w-auto flex items-center overflow-hidden">
+<!-- Animated Logo from SCREEN_8 -->
+<svg class="h-full w-auto" fill="none" viewbox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+<style>
+    @keyframes pulse-flow {
+      0% { stroke-dashoffset: 2000; opacity: 0.8; }
+      50% { opacity: 1; }
+      100% { stroke-dashoffset: 0; opacity: 0.8; }
+    }
+    .pulse-line {
+      stroke: #006a61; /* Updated to match theme secondary color */
+      stroke-width: 24;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 1000;
+      animation: pulse-flow 3s linear infinite;
+    }
+    .ship-hull { fill: #0b1c30; } /* On-background color */
+    .accent-teal { fill: #006a61; } /* Secondary color */
+    .text-label { fill: #0b1c30; font-family: 'Inter', sans-serif; font-weight: bold; font-size: 56px; }
+  </style>
+<path class="ship-hull" d="M150 480 L180 620 L800 620 L880 480 Z"></path>
+<rect class="ship-hull" height="80" rx="4" width="120" x="220" y="400"></rect>
+<rect class="ship-hull" height="60" rx="4" width="100" x="360" y="420"></rect>
+<rect class="ship-hull" height="40" rx="4" width="80" x="480" y="440"></rect>
+<path class="pulse-line" d="M100 530 L250 530 L280 480 L310 580 L340 530 L550 530 L580 440 L610 620 L640 530 L900 530" fill="none"></path>
+<path class="accent-teal" d="M500 400 L750 300 L750 420 L720 420 L720 330 L530 410 Z"></path>
+<rect class="accent-teal" height="30" rx="2" width="60" x="720" y="420"></rect>
+<text class="text-label" x="200" y="750">PAK TRADE FLOW</text>
+</svg>
+</div>
+</div><nav class="flex-1 px-md space-y-xs" data-active-classes="bg-surface-container text-primary font-semibold"><a aria-current="page" class="flex items-center gap-md px-md py-sm rounded-lg transition-all bg-surface-container text-primary font-semibold" data-path="dashboard" href="#"><span class="material-symbols-outlined">dashboard</span><span class="font-body-md text-body-md">Dashboard</span></a><div class="py-xs px-md"><span class="font-label-caps text-label-caps text-outline uppercase">Analytics</span></div><a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="commodity-flows" href="#"><span class="material-symbols-outlined">oil_barrel</span><span class="font-body-md text-body-md">Commodity Flows</span></a><a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="market-trends" href="#"><span class="material-symbols-outlined">trending_up</span><span class="font-body-md text-body-md">Market Trends</span></a><a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="port-analytics" href="#"><span class="material-symbols-outlined">anchor</span><span class="font-body-md text-body-md">Port Analytics</span></a><div class="py-xs px-md"><span class="font-label-caps text-label-caps text-outline uppercase">Insights</span></div><a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="reports-insights" href="#"><span class="material-symbols-outlined">description</span><span class="font-body-md text-body-md">Reports &amp; Insights</span></a></nav><div class="px-md py-lg border-t border-outline-variant"><a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="settings" href="#"><span class="material-symbols-outlined">settings</span><span class="font-body-md text-body-md">Settings</span></a></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl z-40 flex items-center justify-between px-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex-1 max-w-xl"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-md text-outline">search</span><input class="w-full bg-surface-container-low border border-outline-variant rounded-full py-sm pl-xl pr-md font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/50" placeholder="Search commodities, vessels, or port data..." type="text"/></div></div><div class="flex items-center gap-lg pl-lg"><div class="flex items-center gap-sm pr-md border-r border-outline-variant"><button class="p-xs hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button><button class="p-xs hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined text-on-surface-variant">help</span></button></div><div class="flex items-center gap-md cursor-pointer group"><div class="text-right hidden sm:block"><p class="font-body-md text-body-md font-semibold text-on-surface">Intelligence Officer</p><p class="font-label-caps text-label-caps text-on-surface-variant">Port of Karachi</p></div><img alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-surface-container-highest group-hover:border-secondary transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9J_nzz7bcjcs1EXM1UDF6eNsCQR7QGSzQCzCYQ68ZuSi2nF3295qr-7K_IyorwpcpuboOo62M1iuzGbZb3ZBlYvoHzCnlXRscHLruWzQ3USR0tdpbcINJbvgW1HEZ2LcIlcho5n38cBYWtqug2s7IUGNhajPTYva6Syig3Y3PG9IgkAKvF33xb5yH13E6HvlWYwOll-4Ryw7vClmECusIA-4yUTXkp3cahMTOiQh3avREAKHdTiuExntuymmmbP51NpmQ6WyOWjw"/></div></div></header><main class="relative pt-16 bg-background min-h-screen p-xl"><div class="flex flex-col w-full gap-xl">
+<!-- Executive Overview Header & Hero Metrics -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-lg items-end">
+<div class="lg:col-span-4 flex flex-col gap-sm">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">National Logistics Command</span>
+<h1 class="font-display-lg text-display-lg text-on-surface leading-none">Executive Performance<br/>Dashboard</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md mt-md">
+        Real-time visibility into Pakistan's maritime trade corridors, tracking 1.2M+ tons of daily commodity movement across major deep-water ports.
+      </p>
+</div>
+<div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Import Metric -->
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm flex flex-col gap-xs group hover:shadow-md transition-all duration-300">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-outline uppercase">Total Imports (MT)</span>
+<div class="flex flex-col items-end">
+<span class="font-data-tabular text-secondary flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +8.4% WoW
+            </span>
+<span class="font-data-tabular text-on-surface-variant text-[11px]">MTD: 4.2M</span>
+</div>
+</div>
+<div class="flex items-baseline gap-sm">
+<span class="font-display-lg text-display-lg text-on-surface counter-value" data-target="842109">0</span>
+<span class="font-headline-sm text-headline-sm text-outline">MT</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-md overflow-hidden">
+<div class="bg-secondary h-full rounded-full w-[72%] transition-all duration-1000 ease-out"></div>
+</div>
+</div>
+<!-- Export Metric -->
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm flex flex-col gap-xs group hover:shadow-md transition-all duration-300">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-outline uppercase">Total Exports (MT)</span>
+<div class="flex flex-col items-end">
+<span class="font-data-tabular text-error flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]">trending_down</span> -2.1% WoW
+            </span>
+<span class="font-data-tabular text-on-surface-variant text-[11px]">MTD: 1.8M</span>
+</div>
+</div>
+<div class="flex items-baseline gap-sm">
+<span class="font-display-lg text-display-lg text-on-surface counter-value" data-target="318440">0</span>
+<span class="font-headline-sm text-headline-sm text-outline">MT</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-md overflow-hidden">
+<div class="bg-primary h-full rounded-full w-[44%] transition-all duration-1000 ease-out"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Map & Commodity Pulse -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-xl">
+<!-- Map Container -->
+<div class="lg:col-span-8 relative overflow-hidden rounded-xl bg-surface-container shadow-md border border-outline-variant/30 min-h-[600px]">
+<div class="absolute inset-0 w-full h-full grayscale opacity-40 hover:opacity-60 transition-opacity" data-location="Pakistan Coastline, Arabian Sea" style=""></div>
+<!-- Overlay UI for Map -->
+<div class="absolute top-lg left-lg z-10 flex flex-col gap-sm">
+<div class="bg-surface/90 backdrop-blur-md p-md rounded-lg shadow-sm">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
+<span class="font-label-caps text-label-caps text-on-surface uppercase">Live Vessel Density</span>
+</div>
+</div>
+</div>
+<!-- Custom Port Markers (Simulated) -->
+<div class="absolute bottom-[15%] left-[22%] z-20 group cursor-pointer">
+<div class="relative">
+<div class="absolute -inset-4 bg-secondary/20 rounded-full animate-ping"></div>
+<div class="w-4 h-4 bg-secondary rounded-full border-2 border-white shadow-xl relative z-10"></div>
+<div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-surface text-on-surface p-sm rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+<p class="font-headline-sm text-headline-sm">Port of Gwadar</p>
+<p class="font-data-tabular text-on-surface-variant">Active: 12 Vessels</p>
+</div>
+</div>
+</div>
+<div class="absolute bottom-[20%] right-[32%] z-20 group cursor-pointer">
+<div class="relative">
+<div class="absolute -inset-6 bg-secondary/10 rounded-full animate-ping duration-1000"></div>
+<div class="w-4 h-4 bg-secondary rounded-full border-2 border-white shadow-xl relative z-10"></div>
+<div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-surface text-on-surface p-sm rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+<p class="font-headline-sm text-headline-sm">Karachi Port Trust</p>
+<p class="font-data-tabular text-on-surface-variant">Active: 42 Vessels</p>
+</div>
+</div>
+</div>
+<div class="absolute bottom-[22%] right-[25%] z-20 group cursor-pointer">
+<div class="relative">
+<div class="w-4 h-4 bg-secondary rounded-full border-2 border-white shadow-xl relative z-10"></div>
+<div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-surface text-on-surface p-sm rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+<p class="font-headline-sm text-headline-sm">Port Qasim</p>
+<p class="font-data-tabular text-on-surface-variant">Active: 31 Vessels</p>
+</div>
+</div>
+</div>
+<!-- Flow Indicators Overlay -->
+<div class="absolute bottom-lg right-lg bg-surface/90 backdrop-blur-md p-md rounded-lg shadow-sm max-w-xs border border-outline-variant/50">
+<p class="font-label-caps text-label-caps text-outline mb-sm uppercase">Active Logistics Lanes</p>
+<div class="space-y-md">
+<div class="flex items-center justify-between gap-xl">
+<span class="font-body-md text-body-md">KPT → Industrial North</span>
+<span class="font-data-tabular text-on-surface font-bold">High</span>
+</div>
+<div class="flex items-center justify-between gap-xl">
+<span class="font-body-md text-body-md">Gwadar → CPEC Central</span>
+<span class="font-data-tabular text-secondary font-bold">Stable</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Commodity Pulse Sidebar -->
+<div class="lg:col-span-4 flex flex-col gap-lg">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md">Top Commodities</h3>
+<button class="text-secondary font-label-caps text-label-caps hover:underline">View All</button>
+</div>
+<!-- Commodity Card: Oil -->
+<div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border-l-4 border-secondary flex items-center gap-md hover:translate-x-1 transition-transform">
+<div class="w-12 h-12 bg-secondary-container rounded-lg flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">oil_barrel</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center">
+<p class="font-headline-sm text-headline-sm">Crude Oil</p>
+<span class="font-data-tabular text-on-surface">182k T</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">4 Tankers Discharging</p>
+</div>
+</div>
+<!-- Commodity Card: Cement -->
+<div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border-l-4 border-primary flex items-center gap-md hover:translate-x-1 transition-transform">
+<div class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">architecture</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center">
+<p class="font-headline-sm text-headline-sm">Cement</p>
+<span class="font-data-tabular text-on-surface">94k T</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Active Export Drive</p>
+</div>
+</div>
+<!-- Commodity Card: Grain -->
+<div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border-l-4 border-tertiary-fixed flex items-center gap-md hover:translate-x-1 transition-transform">
+<div class="w-12 h-12 bg-tertiary-fixed rounded-lg flex items-center justify-center text-on-tertiary-fixed">
+<span class="material-symbols-outlined">grass</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center">
+<p class="font-headline-sm text-headline-sm">Wheat/Grain</p>
+<span class="font-data-tabular text-on-surface">112k T</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Seasonal Import Influx</p>
+</div>
+</div>
+<!-- Market Pulse Chart Card -->
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm mt-auto">
+<p class="font-label-caps text-label-caps text-outline uppercase mb-md">Market Flow Pulse (30D)</p>
+<div class="h-40 w-full flex items-end gap-1 px-1">
+<!-- Synthetic Bar Chart -->
+<div class="bg-secondary/20 hover:bg-secondary w-full h-[60%] transition-all rounded-t-sm" title="Day 1: 420k"></div>
+<div class="bg-secondary/20 hover:bg-secondary w-full h-[65%] transition-all rounded-t-sm"></div>
+<div class="bg-secondary/20 hover:bg-secondary w-full h-[58%] transition-all rounded-t-sm"></div>
+<div class="bg-secondary/20 hover:bg-secondary w-full h-[72%] transition-all rounded-t-sm"></div>
+<div class="bg-secondary/20 hover:bg-secondary w-full h-[85%] transition-all rounded-t-sm"></div>
+<div class="bg-secondary/20 hover:bg-secondary w-full h-[92%] transition-all rounded-t-sm"></div>
+<div class="bg-secondary/20 hover:bg-secondary w-full h-[88%] transition-all rounded-t-sm"></div>
+<div class="bg-secondary w-full h-[95%] transition-all rounded-t-sm"></div>
+<div class="bg-secondary/20 hover:bg-secondary w-full h-[70%] transition-all rounded-t-sm"></div>
+<div class="bg-secondary/20 hover:bg-secondary w-full h-[62%] transition-all rounded-t-sm"></div>
+<div class="bg-secondary/20 hover:bg-secondary w-full h-[55%] transition-all rounded-t-sm"></div>
+<div class="bg-secondary/20 hover:bg-secondary w-full h-[48%] transition-all rounded-t-sm"></div>
+</div>
+<div class="flex justify-between mt-sm">
+<span class="font-label-caps text-label-caps text-outline">Oct 01</span>
+<span class="font-label-caps text-label-caps text-outline">Today</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Activity & Analytics Grid -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-xl pb-xl">
+<!-- Recent Activity Feed -->
+<div class="lg:col-span-7 bg-surface-container-lowest rounded-xl shadow-sm p-lg">
+<div class="flex items-center justify-between mb-xl">
+<h3 class="font-headline-md text-headline-md">Live Shipment Stream</h3>
+<span class="px-md py-xs bg-surface-container text-on-surface rounded-full font-label-caps text-label-caps">LIVE UPDATE</span>
+</div>
+<div class="space-y-md">
+<!-- Row 1 -->
+<div class="grid grid-cols-12 gap-md items-center py-md border-b border-outline-variant/30 hover:bg-background transition-colors px-md rounded-lg">
+<div class="col-span-1">
+<span class="material-symbols-outlined text-secondary">glass</span>
+</div>
+<div class="col-span-4">
+<p class="font-body-md text-body-md font-bold text-on-surface">MV Indus Fortune</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Container / KPT</p>
+</div>
+<div class="col-span-3 text-right">
+<p class="font-data-tabular text-on-surface">2,400 TEU</p>
+<p class="font-label-caps text-label-caps text-outline">DISCHARGING</p>
+</div>
+<div class="col-span-4 text-right">
+<p class="font-body-md text-body-md text-on-surface">08:45 AM</p>
+<p class="font-label-caps text-label-caps text-secondary">ON SCHEDULE</p>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-12 gap-md items-center py-md border-b border-outline-variant/30 hover:bg-background transition-colors px-md rounded-lg">
+<div class="col-span-1">
+<span class="material-symbols-outlined text-on-surface-variant">oil_barrel</span>
+</div>
+<div class="col-span-4">
+<p class="font-body-md text-body-md font-bold text-on-surface">Al-Hameed Tanker</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Liquid Bulk / Qasim</p>
+</div>
+<div class="col-span-3 text-right">
+<p class="font-data-tabular text-on-surface">45,000 MT</p>
+<p class="font-label-caps text-label-caps text-outline">ANCHORED</p>
+</div>
+<div class="col-span-4 text-right">
+<p class="font-body-md text-body-md text-on-surface">06:12 AM</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">CLEARANCE PENDING</p>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="grid grid-cols-12 gap-md items-center py-md border-b border-outline-variant/30 hover:bg-background transition-colors px-md rounded-lg">
+<div class="col-span-1">
+<span class="material-symbols-outlined text-secondary">anchor</span>
+</div>
+<div class="col-span-4">
+<p class="font-body-md text-body-md font-bold text-on-surface">Oriental Pioneer</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Dry Bulk / Gwadar</p>
+</div>
+<div class="col-span-3 text-right">
+<p class="font-data-tabular text-on-surface">18,500 MT</p>
+<p class="font-label-caps text-label-caps text-outline">LOADING</p>
+</div>
+<div class="col-span-4 text-right">
+<p class="font-body-md text-body-md text-on-surface">04:30 AM</p>
+<p class="font-label-caps text-label-caps text-secondary">AHEAD OF PLAN</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Efficiency & Berthing Stats -->
+<div class="lg:col-span-5 flex flex-col gap-xl">
+<!-- Port Efficiency Bento -->
+<div class="bg-primary text-on-primary p-lg rounded-xl shadow-xl relative overflow-hidden flex-1">
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md mb-md">Port Turnaround Time</h3>
+<div class="flex items-center gap-xl mb-xl">
+<div>
+<p class="font-display-lg text-display-lg">1.4</p>
+<p class="font-label-caps text-label-caps opacity-70">DAYS (AVG)</p>
+</div>
+<div class="h-12 w-px bg-white/20"></div>
+<div>
+<p class="font-headline-md text-headline-md text-secondary-fixed">▲ 12%</p>
+<p class="font-label-caps text-label-caps opacity-70">EFFICIENCY GAIN</p>
+</div>
+</div>
+<p class="font-body-md text-body-md opacity-80 leading-relaxed">
+            Optimized yard planning at KPT Terminal 4 has reduced container dwell time by 14 hours this month.
+          </p>
+</div>
+<!-- Abstract geometric accent -->
+<div class="absolute -right-8 -bottom-8 w-48 h-48 bg-secondary/10 rounded-full blur-3xl"></div>
+</div>
+<!-- Quick Actions -->
+<div class="grid grid-cols-2 gap-md">
+<button class="flex flex-col items-center justify-center p-lg bg-surface-container-high hover:bg-surface-container-highest transition-colors rounded-xl gap-sm">
+<span class="material-symbols-outlined text-on-surface">description</span>
+<span class="font-label-caps text-label-caps uppercase">Export PDF Report</span>
+</button>
+<button class="flex flex-col items-center justify-center p-lg bg-secondary text-on-secondary hover:bg-on-secondary-fixed transition-colors rounded-xl gap-sm">
+<span class="material-symbols-outlined">notifications_active</span>
+<span class="font-label-caps text-label-caps uppercase">Custom Alerts</span>
+</button>
+</div>
+</div>
+</section>
+<script>
+    // Micro-interaction: Animated Counter for Metrics
+    document.addEventListener('DOMContentLoaded', () => {
+      const counters = document.querySelectorAll('.counter-value');
+      const speed = 200;
+
+      counters.forEach(counter => {
+        const updateCount = () => {
+          const target = +counter.getAttribute('data-target');
+          const count = +counter.innerText.replace(/,/g, '');
+          const inc = target / speed;
+
+          if (count < target) {
+            counter.innerText = Math.ceil(count + inc).toLocaleString();
+            setTimeout(updateCount, 10);
+          } else {
+            counter.innerText = target.toLocaleString();
+          }
+        };
+        updateCount();
+      });
+    });
+
+    // Simulated Map Hover logic is handled by CSS, but could be expanded here.
+  </script>
+</div></main></div></body></html>

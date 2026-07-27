@@ -1,0 +1,11 @@
+What the data actually supports on the site
+
+Commodity flow intelligence (main pillar, well-supported by commodity_flow, 3,229 rows across both ports, currently April–July 2026):
+- Import volume by category — Coal (2.78M MT), Petroleum (2.73M MT), LPG/LNG (1.43M MT), Oilseeds (893K MT), Edible Oil (568K MT) dominate; good default landing-page chart.
+- Use weight_24h_mt for any time-series/summed view, not weight_mt (per CLAUDE.md, weight_mt double-counts across a vessel's berthed days) — PQ only has weight_24h_mt on 777/2,384 rows (33%) vs KPT's 845/845 (100%), so PQ trend charts will undercount unless you fall back to something else for the missing 67%.
+- Terminal-level drill-down for PQ (PIBT 527 rows, FAP 300, FOTCO 102, etc.) — good for a "which terminal handles what" view, but ~1,000 of 2,384 PQ rows have no terminal, so caveat that.
+- Import vs export split is lopsided and real: PQ is import-heavy (1,717 import vs 259 export), KPT skews export (518 vs 327) — worth surfacing as a port-comparison stat, not hiding.
+
+Supply chain / congestion analytics (the CLAUDE.md's second pillar) — this is where the historical marts matter most:
+- mart_shipments.wait_days gives real vessel turnaround/waiting-time data (PQ avg 3.5 days, max 376 — that max is almost certainly one of the 12 flagged is_outlier rows, filter those out for a "typical wait" stat).
+- mart_port_activity (ships waiting vs berthed by day) is exactly a port-congestion chart — but only once it's rebuilt through the current date.

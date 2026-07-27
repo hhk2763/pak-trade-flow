@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+<!-- STITCH_SVG_START:ANIMATION_18 class="fixed inset-0 w-full h-full" --><div class="fixed inset-0 w-full h-full" id="animated-svg-ANIMATION_18" style="display:block;"><svg fill="none" viewbox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+<style>
+    @keyframes pulse-flow {
+      0% { stroke-dashoffset: 2000; opacity: 0.8; }
+      50% { opacity: 1; }
+      100% { stroke-dashoffset: 0; opacity: 0.8; }
+    }
+    .pulse-line {
+      stroke: #00f2ff; /* High-visibility cyan/teal */
+      stroke-width: 14;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 1000;
+      animation: pulse-flow 3s linear infinite;
+    }
+    .ship-hull { fill: #ffffff; } /* White for maximum contrast on black */
+    .accent-teal { fill: #00f2ff; } /* Matching cyan accent */
+    .text-label { fill: #ffffff; font-family: sans-serif; font-weight: bold; font-size: 48px; }
+  </style>
+<!-- Ship Base -->
+<path class="ship-hull" d="M150 480 L180 620 L800 620 L880 480 Z"></path>
+<rect class="ship-hull" height="80" rx="4" width="120" x="220" y="400"></rect>
+<rect class="ship-hull" height="60" rx="4" width="100" x="360" y="420"></rect>
+<rect class="ship-hull" height="40" rx="4" width="80" x="480" y="440"></rect>
+<!-- Pulse Line (Animated) -->
+<path class="pulse-line" d="M100 530 L250 530 L280 480 L310 580 L340 530 L550 530 L580 440 L610 620 L640 530 L900 530" fill="none"></path>
+<!-- Port Pulse Crane Element -->
+<path class="accent-teal" d="M500 400 L750 300 L750 420 L720 420 L720 330 L530 410 Z"></path>
+<rect class="accent-teal" height="30" rx="2" width="60" x="720" y="420"></rect>
+<text class="text-label" x="350" y="700">PAK TRADE FLOW</text>
+</svg></div><!-- STITCH_SVG_END:ANIMATION_18 -->
+</body></html>
