@@ -4,7 +4,7 @@
 
 ## What it does & the problem it solves
 
-Every day, Port Qasim and Karachi Port Trust each publish their own raw cargo statements — daily tonnage PDFs and outer-anchorage Excel sheets listing every vessel, its cargo, and whether it's importing or exporting. That data exists, but nobody can *see* it: it's scattered across dozens of per-day files, in inconsistent formats, with no unified view of what's actually moving through the country's ports.
+Every day, Port Qasim and Karachi Port Trust each publish their own raw cargo statements — daily tonnage PDFs and, its cargo, and whether it's importing or exporting. That data exists, but nobody can *see* it: it's scattered across dozens of per-day files, in inconsistent formats, with no unified view of what's actually moving through the country's ports.
 
 **PAK Trade Flow** turns that raw daily paperwork (already parsed and loaded into a Postgres database by a companion ETL pipeline) into a single, live, queryable dashboard. It answers the questions a trade analyst, logistics planner, or port operations stakeholder actually has:
 
