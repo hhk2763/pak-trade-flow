@@ -24,7 +24,7 @@ Every day, Port Qasim and Karachi Port Trust each publish their own raw cargo st
 ## Features
 
 **Dashboard** (`/`)
-- Executive KPIs: total import & export volume for the **trailing 7 days**, with week-over-week % change, clearly labeled with the exact date range
+- Executive KPIs: total import & export volume for the **trailing 7 days**, with week-over-week and month-over-month % change, clearly labeled with the exact date range. MoM compares the same 7-day window against the equivalent week four weeks back, so it's a same-length comparison rather than a week measured against a full month
 - Live "Data as of" freshness badge showing the latest report date in the database
 - Top Commodities — every category with real reported volume, **each one clickable**, jumping straight to that category's trend on the Market Trends page
 - Recent Shipments feed — the latest real vessel calls (ship name, commodity, port/terminal, tonnage, import/export)
@@ -39,7 +39,16 @@ Every day, Port Qasim and Karachi Port Trust each publish their own raw cargo st
 - Daily volume trend line chart spanning the full data history
 - Toggle between "All Categories" and any single commodity — **both Import and Export lines are always shown and color-coded**, so direction is never lost even when drilling into one commodity
 - Deep-linkable via `?category=` — the Dashboard's commodity links land here pre-filtered
-- 7-day import/export volume stat cards with WoW % change
+- 7-day import/export volume stat cards with WoW and MoM % change
+
+**Lead capture & access gating** (`components/gating/`)
+- The Recent Shipments feed shows the **first 2 rows free** — enough to prove the data is real — then blurs the rest behind an "Unlock Access" overlay. The Market Trends chart is gated the same way
+- A modal collects name, work email, primary commodity interest (the lead-qualification signal), an optional message, and an opt-in for the weekly AI briefing. Submissions POST to `/api/lead`, which forwards them to a Google Apps Script webhook that appends to a spreadsheet
+- Unlock state persists in `localStorage`; the same form powers `/contact` via `/api/contact`
+- **This is a marketing gate, not access control.** The gated rows are already in the server-rendered HTML and merely blurred with CSS, so anyone reading the page source can see them. It exists to convert visitors, not to protect data — treat it accordingly if genuinely sensitive data is ever added
+
+**AI Weekly Trade Briefing**
+- A short weekly narrative of commodity flow, generated from code-computed figures and emailed to subscribers. See [the section below](#ai-feature-weekly-trade-briefing) for the architecture, and `docs/sample-briefing.md` for a real generated example
 
 **Design**
 - Custom Material Design 3–inspired theme (colors, type scale, spacing) ported from the original Stitch design mockups
@@ -51,6 +60,8 @@ Every day, Port Qasim and Karachi Port Trust each publish their own raw cargo st
 A short, human-readable narrative summary of the week's commodity flow, written by an LLM (**DeepSeek**) from the same aggregated data the Dashboard already computes server-side — the kind of two-sentence briefing a busy port official can read in five seconds instead of interpreting charts.
 
 It is delivered as a **weekly email to subscribers**, not rendered in the app: visitors opt in via the "Email me the weekly AI trade briefing" checkbox on the lead-capture modal and contact form, which turns a one-shot email capture into a recurring touchpoint.
+
+A real generated example — the email body, plus a table of every figure behind it — is checked in at **`docs/sample-briefing.md`**, with `docs/sample-briefing.html` showing it rendered as the email actually arrives.
 
 ### The LLM never produces a number
 
@@ -131,8 +142,8 @@ Sending an OpenRouter key to `api.deepseek.com` returns a bare `401 Authenticati
 
 | Category | Choice |
 |---|---|
-| AI pair-programmer | **Claude Code** (Sonnet 5) — used for the entire build: architecture, data-layer code, UI components, debugging, and this README |
-| In-product AI | **DeepSeek** (`deepseek-chat`) — writes the weekly trade briefing from code-computed figures, called over its OpenAI-compatible REST API with no SDK |
+| AI pair-programmer | **Claude Code** — Sonnet 5 for the original dashboard build (architecture, data layer, UI components, this README), Opus 5 for the AI briefing feature |
+| In-product AI | **DeepSeek** (`deepseek-chat`) — writes the weekly trade briefing from code-computed figures, called over its OpenAI-compatible REST API with no SDK. Reachable directly or via OpenRouter; see [Provider configuration](#provider-configuration) |
 | Email delivery | **Google Apps Script** + `MailApp`, driven by a weekly time-based trigger |
 | Framework | **Next.js 14** (App Router, Server Components, TypeScript) |
 | Styling | **Tailwind CSS**, custom design tokens, Google Fonts (Inter, JetBrains Mono, Material Symbols Outlined) |
@@ -219,6 +230,6 @@ npm start
 
 Being transparent about this since it shapes several design decisions in the app:
 
-- **Partial 24h coverage**: `weight_24h_mt` (used for all volume sums, to avoid double-counting vessels across multiple berthed days) is only populated on ~33% of Port Qasim rows vs. 100% of KPT rows. Totals reflect *reported* volume, not necessarily total physical volume.
-
+- **Partial 24h coverage**: `weight_24h_mt` (used for all volume sums, to avoid double-counting vessels across multiple berthed days) is only populated on ~33% of Port Qasim rows vs. 100% of KPT rows. Totals reflect *reported* volume, not necessarily total physical volume. The weekly briefing computes this shortfall per period and states it outright when it crosses a threshold, so the caveat travels with the numbers rather than living only here.
+- **Missing terminals**: ~44% of Port Qasim rows (1,036 of 2,384) have no terminal recorded, so the terminal drill-down ranks only what was reported. The UI says so on the page rather than presenting the breakdown as complete.
 
