@@ -17,9 +17,8 @@ Every day, Port Qasim and Karachi Port Trust each publish their own raw cargo st
 
 ## Live Demo
 
-> ⚠️ **TODO — not yet deployed.** This project currently runs locally only (`npm run dev` → `http://localhost:3000`). Replace this line with the live URL once deployed (e.g. to Vercel).
 
-**[ 🔗 LIVE_URL_GOES_HERE ]**
+**[ 🔗 https://pak-trade-flow.vercel.app/ ]**
 
 ## Features
 
@@ -43,9 +42,9 @@ Every day, Port Qasim and Karachi Port Trust each publish their own raw cargo st
 
 **Lead capture & access gating** (`components/gating/`)
 - The Recent Shipments feed shows the **first 2 rows free** — enough to prove the data is real — then blurs the rest behind an "Unlock Access" overlay. The Market Trends chart is gated the same way
-- A modal collects name, work email, primary commodity interest (the lead-qualification signal), an optional message, and an opt-in for the weekly AI briefing. Submissions POST to `/api/lead`, which forwards them to a Google Apps Script webhook that appends to a spreadsheet
+- A form collects name, work email, primary commodity interest (the lead-qualification signal), an optional message, and an opt-in for the weekly AI briefing. Submissions POST to `/api/lead`, which forwards them to a Google Apps Script webhook that appends to a spreadsheet
 - Unlock state persists in `localStorage`; the same form powers `/contact` via `/api/contact`
-- **This is a marketing gate, not access control.** The gated rows are already in the server-rendered HTML and merely blurred with CSS, so anyone reading the page source can see them. It exists to convert visitors, not to protect data — treat it accordingly if genuinely sensitive data is ever added
+- **This is a marketing gate, not access control.** The gated rows are already in the server-rendered HTML and merely blurred with CSS, so anyone reading the page source can see them. It exists to convert visitors, not to protect data.
 
 **AI Weekly Trade Briefing**
 - A short weekly narrative of commodity flow, generated from code-computed figures and emailed to subscribers. See [the section below](#ai-feature-weekly-trade-briefing) for the architecture, and `docs/sample-briefing.md` for a real generated example
@@ -72,8 +71,6 @@ The one unacceptable failure here is a hallucinated tonnage figure going out by 
 3. **The model only writes prose.** It receives figures pre-formatted (`1,243,891 MT`) so that copying them is easier than restating them.
 4. **The output is validated back against the facts.** Two gates in `lib/ai/briefing.ts`: `validateBriefingNumbers()` requires every tonnage and percentage claim to trace to a real value within a rounding tolerance, and `validateComparativeClaims()` checks that any "higher/lower/more/fewer … than …" assertion actually holds between the two numbers named. A failure triggers one corrective retry, then a deterministic non-AI fallback.
 5. **The email always sends.** If the model is unreachable, out of credit, or fails validation twice, `buildFallbackBriefing()` produces a plainer briefing from the same facts. The response records which path ran (`source: "ai" | "fallback"`), and `validationIssues` always explains a fallback.
-
-The "is this undercounted?" caveat is likewise a computed fact, not a model judgement — `coverageWarning` is set only when partial `weight_24h_mt` coverage in the window crosses a threshold, and the prompt tells the model to mention undercounting only when it is flagged.
 
 ### System prompt
 
@@ -195,7 +192,6 @@ DEEPSEEK_MODEL=deepseek-chat
 BRIEFING_CRON_SECRET=<random 32-byte hex string>
 ```
 
-> The service-role key bypasses Row Level Security and is required because this project has no public SELECT policy on `commodity_flow`. It is read only by server-side code (`lib/supabase/server.ts`) and is never sent to the browser — do not prefix it `NEXT_PUBLIC_` and never commit `.env.local`.
 
 > `DEEPSEEK_API_KEY` and `BRIEFING_CRON_SECRET` are likewise server-only. The app runs fine without them — only `/api/briefing/dispatch` needs them, and it rejects every request when the secret is unset.
 
@@ -231,5 +227,4 @@ npm start
 Being transparent about this since it shapes several design decisions in the app:
 
 - **Partial 24h coverage**: `weight_24h_mt` (used for all volume sums, to avoid double-counting vessels across multiple berthed days) is only populated on ~33% of Port Qasim rows vs. 100% of KPT rows. Totals reflect *reported* volume, not necessarily total physical volume. The weekly briefing computes this shortfall per period and states it outright when it crosses a threshold, so the caveat travels with the numbers rather than living only here.
-- **Missing terminals**: ~44% of Port Qasim rows (1,036 of 2,384) have no terminal recorded, so the terminal drill-down ranks only what was reported. The UI says so on the page rather than presenting the breakdown as complete.
 
