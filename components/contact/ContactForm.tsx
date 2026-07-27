@@ -7,6 +7,7 @@ export function ContactForm({ categories }: { categories: string[] }) {
   const [email, setEmail] = useState("");
   const [commodityInterest, setCommodityInterest] = useState("");
   const [message, setMessage] = useState("");
+  const [subscribeWeekly, setSubscribeWeekly] = useState(true);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [error, setError] = useState("");
 
@@ -18,7 +19,7 @@ export function ContactForm({ categories }: { categories: string[] }) {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, commodityInterest, message }),
+        body: JSON.stringify({ name, email, commodityInterest, message, subscribeWeekly }),
       });
       const data = await res.json();
       if (!res.ok || !data.ok) {
@@ -108,6 +109,18 @@ export function ContactForm({ categories }: { categories: string[] }) {
           className="px-md py-sm rounded-lg border border-outline-variant bg-background font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary resize-none"
           placeholder="What are you trying to track?"
         />
+      </label>
+
+      <label className="flex items-start gap-sm cursor-pointer">
+        <input
+          type="checkbox"
+          checked={subscribeWeekly}
+          onChange={(e) => setSubscribeWeekly(e.target.checked)}
+          className="mt-0.5 w-4 h-4 shrink-0 accent-primary"
+        />
+        <span className="font-body-md text-body-md text-on-surface-variant">
+          Email me the weekly AI trade briefing
+        </span>
       </label>
 
       {status === "error" && <p className="font-body-md text-body-md text-error">{error}</p>}

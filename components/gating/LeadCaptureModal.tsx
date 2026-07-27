@@ -15,6 +15,7 @@ export function LeadCaptureModal({
   const [email, setEmail] = useState("");
   const [commodityInterest, setCommodityInterest] = useState("");
   const [message, setMessage] = useState("");
+  const [subscribeWeekly, setSubscribeWeekly] = useState(true);
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [error, setError] = useState("");
 
@@ -26,7 +27,7 @@ export function LeadCaptureModal({
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, commodityInterest, message }),
+        body: JSON.stringify({ name, email, commodityInterest, message, subscribeWeekly }),
       });
       const data = await res.json();
       if (!res.ok || !data.ok) {
@@ -54,7 +55,8 @@ export function LeadCaptureModal({
               Unlock Full Access
             </h3>
             <p className="font-body-md text-body-md text-on-surface-variant mt-xs">
-              Unlock deep-dive shipment details and historical trends.
+              Unlock deep-dive shipment details and historical trends, plus a weekly
+              AI-written trade briefing in your inbox.
             </p>
           </div>
           <button
@@ -123,6 +125,18 @@ export function LeadCaptureModal({
               className="px-md py-sm rounded-lg border border-outline-variant bg-background font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary resize-none"
               placeholder="What are you trying to track?"
             />
+          </label>
+
+          <label className="flex items-start gap-sm cursor-pointer">
+            <input
+              type="checkbox"
+              checked={subscribeWeekly}
+              onChange={(e) => setSubscribeWeekly(e.target.checked)}
+              className="mt-0.5 w-4 h-4 shrink-0 accent-primary"
+            />
+            <span className="font-body-md text-body-md text-on-surface-variant">
+              Email me the weekly AI trade briefing
+            </span>
           </label>
 
           {status === "error" && (

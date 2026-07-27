@@ -32,7 +32,13 @@ export async function forwardLead(payload: Record<string, unknown>) {
 }
 
 export async function handleLeadSubmission(request: Request, source: string) {
-  let body: { name?: string; email?: string; commodityInterest?: string; message?: string };
+  let body: {
+    name?: string;
+    email?: string;
+    commodityInterest?: string;
+    message?: string;
+    subscribeWeekly?: boolean;
+  };
   try {
     body = await request.json();
   } catch {
@@ -43,6 +49,9 @@ export async function handleLeadSubmission(request: Request, source: string) {
   const email = body.email?.trim() ?? "";
   const commodityInterest = body.commodityInterest?.trim() ?? "";
   const message = body.message?.trim() ?? "";
+  // Only these addresses receive the weekly AI briefing — an email given to
+  // unlock a chart is not consent to a recurring newsletter.
+  const subscribeWeekly = body.subscribeWeekly === true;
 
   if (!name || !EMAIL_RE.test(email) || !commodityInterest) {
     return NextResponse.json(
@@ -56,6 +65,7 @@ export async function handleLeadSubmission(request: Request, source: string) {
     email,
     commodityInterest,
     message: message || null,
+    subscribeWeekly,
     source,
     submittedAt: new Date().toISOString(),
   });

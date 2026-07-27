@@ -2,7 +2,7 @@ import "server-only";
 import { unstable_cache } from "next/cache";
 import { supabaseServer } from "@/lib/supabase/server";
 import type { CommodityFlowRow } from "@/lib/types/database";
-import { categoryImportKey, categoryExportKey } from "@/lib/format";
+import { categoryImportKey, categoryExportKey, formatDateRange } from "@/lib/format";
 
 const PAGE_SIZE = 1000;
 
@@ -245,4 +245,71 @@ export function getDailyTrendDetailed(rows: CommodityFlowRow[]): DailyTrendPoint
     byDate.set(row.report_date, point);
   }
   return Array.from(byDate.values()).sort((a, b) => a.date.localeCompare(b.date));
+}
+
+// The input to the AI weekly briefing. Every figure the generated prose is
+// allowed to state comes from here — the model is given this object and is
+// never asked to compute anything, so the briefing can be validated back
+// against it before it goes out by email (see lib/ai/briefing.ts).
+export interface BriefingFacts {
+  // Pre-formatted so the model copies the date range verbatim instead of
+  // reformatting (and potentially mis-stating) it.
+  periodLabel: string;
+  periodStartDate: string;
+  latestReportDate: string;
+  totalImportMt: number;
+  totalExportMt: number;
+  importWoWPct: number | null;
+  exportWoWPct: number | null;
+  importMoMPct: number | null;
+  exportMoMPct: number | null;
+  topCategories: CategoryTotal[];
+  ports: PortComparison[];
+  // Non-null only when partial weight_24h_mt coverage in this window is large
+  // enough to matter. The prompt tells the model to mention undercounting only
+  // when this is flagged, so the judgement stays in code, not in the model.
+  coverageWarning: string | null;
+}
+
+const TOP_CATEGORY_COUNT = 3;
+// Below this, the caveat is noise rather than useful context.
+const COVERAGE_WARNING_THRESHOLD_PCT = 15;
+
+export function buildBriefingFacts(rows: CommodityFlowRow[]): BriefingFacts {
+  const kpis = getHeroKpis(rows);
+
+  // Same trailing-7-day window getHeroKpis used, so the narrative figures and
+  // the WoW/MoM percentages describe exactly the same set of shipments.
+  const weekRows = rows.filter(
+    (r) =>
+      r.report_date >= kpis.periodStartDate && r.report_date <= kpis.latestReportDate
+  );
+
+  const topCategories = getCategoryTotals(weekRows)
+    .filter((c) => c.totalMt > 0)
+    .slice(0, TOP_CATEGORY_COUNT);
+
+  const pqRows = weekRows.filter((r) => r.port === "PQ");
+  const pqMissing = pqRows.filter((r) => r.weight_24h_mt === null).length;
+  const missingPct = pqRows.length > 0 ? (pqMissing / pqRows.length) * 100 : 0;
+
+  const coverageWarning =
+    missingPct >= COVERAGE_WARNING_THRESHOLD_PCT
+      ? `${Math.round(missingPct)}% of Port Qasim records in this period have no 24-hour tonnage reported, so import totals are a floor, not a complete count.`
+      : null;
+
+  return {
+    periodLabel: formatDateRange(kpis.periodStartDate, kpis.latestReportDate),
+    periodStartDate: kpis.periodStartDate,
+    latestReportDate: kpis.latestReportDate,
+    totalImportMt: kpis.totalImportMt,
+    totalExportMt: kpis.totalExportMt,
+    importWoWPct: kpis.importWoWPct,
+    exportWoWPct: kpis.exportWoWPct,
+    importMoMPct: kpis.importMoMPct,
+    exportMoMPct: kpis.exportMoMPct,
+    topCategories,
+    ports: getPortComparison(weekRows),
+    coverageWarning,
+  };
 }
