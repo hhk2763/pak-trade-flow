@@ -17,7 +17,7 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col w-full gap-xl">
       <HeroKpis kpis={kpis} />
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-xl pb-xl">
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-xl pb-xl items-start">
         <div className="lg:col-span-7">
           <RecentShipments shipments={recent} />
         </div>

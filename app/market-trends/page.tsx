@@ -6,6 +6,7 @@ import {
 } from "@/lib/data/commodityFlow";
 import { VolumeTrendChart } from "@/components/market-trends/VolumeTrendChart";
 import { StatCard } from "@/components/ui/StatCard";
+import { GatedSection } from "@/components/gating/GatedSection";
 import { formatDateRange } from "@/lib/format";
 
 export default async function MarketTrendsPage({
@@ -45,8 +46,10 @@ export default async function MarketTrendsPage({
           period={periodLabel}
           value={kpis.totalImportMt}
           unit="MT total"
-          trendPct={kpis.importWoWPct}
-          trendLabel="WoW"
+          trends={[
+            { pct: kpis.importWoWPct, label: "WoW" },
+            { pct: kpis.importMoMPct, label: "MoM" },
+          ]}
           accentClass="bg-secondary"
         />
         <StatCard
@@ -54,14 +57,18 @@ export default async function MarketTrendsPage({
           period={periodLabel}
           value={kpis.totalExportMt}
           unit="MT total"
-          trendPct={kpis.exportWoWPct}
-          trendLabel="WoW"
+          trends={[
+            { pct: kpis.exportWoWPct, label: "WoW" },
+            { pct: kpis.exportMoMPct, label: "MoM" },
+          ]}
           accentClass="bg-primary"
         />
       </section>
 
       <section className="bg-surface-container-lowest rounded-xl shadow-sm p-lg pb-xl">
-        <VolumeTrendChart data={trend} categories={categories} initialView={initialView} />
+        <GatedSection sublabel="Explore daily volume history and category-level trends.">
+          <VolumeTrendChart data={trend} categories={categories} initialView={initialView} />
+        </GatedSection>
       </section>
     </div>
   );

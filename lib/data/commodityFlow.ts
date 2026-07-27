@@ -138,11 +138,16 @@ export function getRecentShipments(
 export interface HeroKpis {
   // totalImportMt/totalExportMt cover the trailing 7 days ending on
   // latestReportDate (periodStartDate..latestReportDate) — NOT all-time —
-  // so they read consistently with the WoW comparison shown next to them.
+  // so they read consistently with the WoW/MoM comparisons shown next to them.
   totalImportMt: number;
   totalExportMt: number;
   importWoWPct: number | null;
   exportWoWPct: number | null;
+  // MoM compares this same trailing-7-day window to the equivalent 7-day
+  // window 4 weeks back, so it's an apples-to-apples same-length comparison
+  // rather than mixing a weekly total against a full month's total.
+  importMoMPct: number | null;
+  exportMoMPct: number | null;
   latestReportDate: string;
   periodStartDate: string;
 }
@@ -173,6 +178,10 @@ export function getHeroKpis(rows: CommodityFlowRow[]): HeroKpis {
   weekAgo.setDate(weekAgo.getDate() - 7);
   const twoWeeksAgo = new Date(latest);
   twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+  const fourWeeksAgo = new Date(latest);
+  fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
+  const fiveWeeksAgo = new Date(latest);
+  fiveWeeksAgo.setDate(fiveWeeksAgo.getDate() - 35);
 
   const toISO = (d: Date) => d.toISOString().slice(0, 10);
 
@@ -180,15 +189,21 @@ export function getHeroKpis(rows: CommodityFlowRow[]): HeroKpis {
   const lastWeek = rows.filter(
     (r) => r.report_date > toISO(twoWeeksAgo) && r.report_date <= toISO(weekAgo)
   );
+  const monthAgoWeek = rows.filter(
+    (r) => r.report_date > toISO(fiveWeeksAgo) && r.report_date <= toISO(fourWeeksAgo)
+  );
 
   const thisWeekSum = sumWeight(thisWeek);
   const lastWeekSum = sumWeight(lastWeek);
+  const monthAgoWeekSum = sumWeight(monthAgoWeek);
 
   return {
     totalImportMt: thisWeekSum.importMt,
     totalExportMt: thisWeekSum.exportMt,
     importWoWPct: pctChange(thisWeekSum.importMt, lastWeekSum.importMt),
     exportWoWPct: pctChange(thisWeekSum.exportMt, lastWeekSum.exportMt),
+    importMoMPct: pctChange(thisWeekSum.importMt, monthAgoWeekSum.importMt),
+    exportMoMPct: pctChange(thisWeekSum.exportMt, monthAgoWeekSum.exportMt),
     latestReportDate,
     periodStartDate: toISO(periodStart),
   };

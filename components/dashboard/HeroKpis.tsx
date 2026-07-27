@@ -11,17 +11,21 @@ export function HeroKpis({ kpis }: { kpis: HeroKpisData }) {
 
   return (
     <section className="grid grid-cols-1 lg:grid-cols-12 gap-lg items-end">
-      <div className="lg:col-span-4 flex flex-col gap-sm">
+      <div className="lg:col-span-4 flex flex-col gap-md">
         <DataFreshnessBadge latestReportDate={kpis.latestReportDate} />
-        <h1 className="font-display-lg text-display-lg text-on-surface leading-none mt-sm">
-          Executive Performance
-          <br />
-          Dashboard
-        </h1>
-        <p className="font-body-lg text-body-lg text-on-surface-variant max-w-md mt-md">
-          Commodity flow across Port Qasim (PQ) and Karachi Port Trust (KPT),
-          built from daily shipping cargo reports.
-        </p>
+        <div className="flex flex-col gap-sm mt-sm">
+          <h1 className="font-display-lg text-display-lg text-on-surface leading-none">
+            Strategic Trade
+            <br />
+            Dashboard
+          </h1>
+          <p className="font-headline-sm text-headline-sm text-secondary">
+            Make your next move with confidence.
+          </p>
+          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-md">
+            Empowering your market strategy with daily, high-fidelity commodity insights.
+          </p>
+        </div>
       </div>
       <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-md">
         <StatCard
@@ -29,8 +33,10 @@ export function HeroKpis({ kpis }: { kpis: HeroKpisData }) {
           period={periodLabel}
           value={kpis.totalImportMt}
           unit="MT"
-          trendPct={kpis.importWoWPct}
-          trendLabel="WoW"
+          trends={[
+            { pct: kpis.importWoWPct, label: "WoW" },
+            { pct: kpis.importMoMPct, label: "MoM" },
+          ]}
           progressPct={importProgress}
           accentClass="bg-secondary"
         />
@@ -39,8 +45,10 @@ export function HeroKpis({ kpis }: { kpis: HeroKpisData }) {
           period={periodLabel}
           value={kpis.totalExportMt}
           unit="MT"
-          trendPct={kpis.exportWoWPct}
-          trendLabel="WoW"
+          trends={[
+            { pct: kpis.exportWoWPct, label: "WoW" },
+            { pct: kpis.exportMoMPct, label: "MoM" },
+          ]}
           progressPct={exportProgress}
           accentClass="bg-primary"
         />
