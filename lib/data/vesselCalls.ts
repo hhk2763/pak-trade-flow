@@ -177,6 +177,9 @@ export interface TerminalCongestion {
   priorMedianWaitDays: number | null;
   calls: number;
   waitingNow: number;
+  // Most common cargo among the window's calls ("LCT" means nothing to an
+  // analyst; "palm oil" does).
+  mainCargo: string | null;
 }
 
 export function getCongestion(calls: VesselCallRow[], windowDays = 28): TerminalCongestion[] {
@@ -186,6 +189,7 @@ export function getCongestion(calls: VesselCallRow[], windowDays = 28): Terminal
 
   const recent = new Map<string, number[]>();
   const prior = new Map<string, number[]>();
+  const cargo = new Map<string, Map<string, number>>();
   const seen = new Set<string>();
   for (const c of calls) {
     if (c.port !== "PQ" || c.wait_days == null || !c.berthed_on || !c.terminal) continue;
@@ -195,6 +199,11 @@ export function getCongestion(calls: VesselCallRow[], windowDays = 28): Terminal
     const bucket = c.berthed_on >= start ? recent : c.berthed_on >= priorStart ? prior : null;
     if (!bucket) continue;
     bucket.set(c.terminal, [...(bucket.get(c.terminal) ?? []), c.wait_days]);
+    if (bucket === recent && c.commodity_standard) {
+      const counts = cargo.get(c.terminal) ?? new Map<string, number>();
+      counts.set(c.commodity_standard, (counts.get(c.commodity_standard) ?? 0) + 1);
+      cargo.set(c.terminal, counts);
+    }
   }
 
   const waitingNow = new Map<string, Set<string>>();
@@ -212,6 +221,8 @@ export function getCongestion(calls: VesselCallRow[], windowDays = 28): Terminal
       priorMedianWaitDays: median(prior.get(terminal) ?? []),
       calls: waits.length,
       waitingNow: waitingNow.get(terminal)?.size ?? 0,
+      mainCargo:
+        Array.from(cargo.get(terminal)?.entries() ?? []).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null,
     }))
     .sort((a, b) => b.medianWaitDays - a.medianWaitDays);
 }

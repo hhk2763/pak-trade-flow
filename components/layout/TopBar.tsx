@@ -15,7 +15,7 @@ export function TopBar() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 bg-surface-container-lowest border-b border-outline-variant">
+    <header className="sticky top-0 z-40 print:hidden bg-surface-container-lowest border-b border-outline-variant">
       <div className="h-14 flex items-center justify-end gap-lg lg:gap-xl px-md lg:px-xl">
         {/* The sidebar is hidden below lg; its logo and pages move up here. */}
         <div className="lg:hidden mr-auto">

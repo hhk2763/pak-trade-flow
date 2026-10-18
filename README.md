@@ -52,7 +52,11 @@ Every day, Port Qasim and Karachi Port Trust each publish their own raw cargo st
 - Windows end on the latest date *both* ports have reported, so a port that publishes a day later never reads as a drop. Percentages are suppressed when either window has fewer than 3 vessels
 - First 2 signals free
 
-Both pages read `vessel_calls` (`lib/data/vesselCalls.ts`): one row per ship visit and cargo line, built nightly by the ship-codex ETL. Its tonnage is the call's manifest, so it neither double-counts a vessel that sat at berth for a week nor drops berths that never report a 24-hour figure.
+**Weekly client report** (`/report?key=…`)
+- A printable 3-page A4 report built from the same data: five "what changed" takeaways (computed by code, not written by a model), the PSX signals table, every vessel waiting at anchorage, and anchorage waits by terminal. Open it, print to PDF, send. A real example is at `docs/gtm/sample-report-2026-10-16.pdf`
+- Not linked from the site, and 404s unless `?key=` matches `REPORT_ACCESS_KEY` (unset means always 404). Like the lead gate this is a speed bump, not access control: anyone holding the link can share it
+
+Both pages and the report read `vessel_calls` (`lib/data/vesselCalls.ts`): one row per ship visit and cargo line, built nightly by the ship-codex ETL. Its tonnage is the call's manifest, so it neither double-counts a vessel that sat at berth for a week nor drops berths that never report a 24-hour figure.
 
 **Lead capture & access gating** (`components/gating/`)
 - The Recent Shipments feed shows the **first 2 rows free** — enough to prove the data is real — then blurs the rest behind an "Unlock Access" overlay. The Market Trends chart is gated the same way

@@ -46,9 +46,9 @@ export default async function RootLayout({
       <body className="bg-background font-body-md text-on-surface">
         <LeadGateProvider categories={categories}>
           <Sidebar portComparison={portComparison} latestReportDate={latestReportDate} />
-          <div className="lg:pl-72">
+          <div className="lg:pl-72 print:pl-0">
             <TopBar />
-            <main className="relative bg-background min-h-screen p-md lg:p-xl">
+            <main className="relative bg-background print:bg-transparent min-h-screen p-md lg:p-xl print:p-0">
               {children}
             </main>
           </div>
