@@ -7,10 +7,12 @@ import { DataFreshnessBadge } from "@/components/ui/DataFreshnessBadge";
 import { formatMt } from "@/lib/format";
 import type { PortComparison } from "@/lib/data/commodityFlow";
 
-const NAV_ITEMS = [
+export const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: "dashboard" },
   { href: "/commodity-flows", label: "Commodity Flows", icon: "oil_barrel" },
   { href: "/market-trends", label: "Market Trends", icon: "trending_up" },
+  { href: "/incoming", label: "Incoming Cargo", icon: "anchor" },
+  { href: "/signals", label: "PSX Signals", icon: "monitoring" },
 ];
 
 const PORT_NAMES: Record<string, string> = {
@@ -28,7 +30,7 @@ export function Sidebar({
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col border-r border-outline-variant">
+    <aside className="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 hidden lg:flex flex-col border-r border-outline-variant">
       <div className="px-lg py-xl flex items-center gap-sm">
         <Logo />
       </div>

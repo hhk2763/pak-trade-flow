@@ -40,6 +40,20 @@ Every day, Port Qasim and Karachi Port Trust each publish their own raw cargo st
 - Deep-linkable via `?category=` — the Dashboard's commodity links land here pre-filtered
 - 7-day import/export volume stat cards with WoW and MoM % change
 
+**Incoming Cargo** (`/incoming`)
+- Every vessel on Port Qasim's latest outer-anchorage report: cargo, quantity, origin, agent, terminal and days waiting so far, i.e. cargo that will be discharged over the coming days
+- Waiting cargo totalled by commodity
+- Anchorage wait by terminal: median days from arrival to berthing over the last 28 days vs the 28 before (demurrage exposure)
+- First 3 vessels free, the rest behind the lead gate
+
+**PSX Signals** (`/signals`)
+- Eleven trade flows mapped to the listed companies they bear on (`lib/psxExposure.ts`): coal, PIBT terminal throughput, cement and clinker exports, crude, petrol and diesel, furnace oil exports, LNG, fertilizer inputs, oilseeds and edible oil, petrochemical feedstock, steel coil
+- Each shows tonnage berthed in the last 28 days vs the prior 28, what is already waiting at anchorage, the median anchorage wait, and why each ticker is on the list
+- Windows end on the latest date *both* ports have reported, so a port that publishes a day later never reads as a drop. Percentages are suppressed when either window has fewer than 3 vessels
+- First 2 signals free
+
+Both pages read `vessel_calls` (`lib/data/vesselCalls.ts`): one row per ship visit and cargo line, built nightly by the ship-codex ETL. Its tonnage is the call's manifest, so it neither double-counts a vessel that sat at berth for a week nor drops berths that never report a 24-hour figure.
+
 **Lead capture & access gating** (`components/gating/`)
 - The Recent Shipments feed shows the **first 2 rows free** — enough to prove the data is real — then blurs the rest behind an "Unlock Access" overlay. The Market Trends chart is gated the same way
 - A form collects name, work email, primary commodity interest (the lead-qualification signal), an optional message, and an opt-in for the weekly AI briefing. Submissions POST to `/api/lead`, which forwards them to a Google Apps Script webhook that appends to a spreadsheet
@@ -223,6 +237,8 @@ npm start
 | `terminal` | text, nullable | PQ only |
 
 ## Known Data Limitations
+
+- **The Dashboard, Commodity Flows and Market Trends pages still sum `commodity_flow.weight_24h_mt`**, which undercounts (see below). Port Qasim also prints LNG in cubic metres and containers as box counts under its "M.Ton" heading, so `commodity_flow`'s PQ LNG figure is roughly 2.2x the real tonnage. `vessel_calls` handles both; moving those pages onto it is the next step.
 
 Being transparent about this since it shapes several design decisions in the app:
 
