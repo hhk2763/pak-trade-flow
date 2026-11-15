@@ -1,87 +1,168 @@
-import {
-  getAllCommodityFlow,
-  getCategoryTotals,
-  getHeroKpis,
-} from "@/lib/data/commodityFlow";
-import { formatDateShort } from "@/lib/format";
+import Link from "next/link";
+import { addMonths, getCoverage, getVesselCalls } from "@/lib/data/vesselCalls";
+import { SECTORS } from "@/lib/sectors";
+import { formatDateLong, formatMonth } from "@/lib/format";
 
-export default async function AboutPage() {
-  const rows = await getAllCommodityFlow();
-  const categories = getCategoryTotals(rows).filter((c) => c.totalMt > 0);
-  const { latestReportDate } = getHeroKpis(rows);
+export const metadata = { title: "Methodology · PAK Trade Flow" };
+
+export default async function MethodologyPage() {
+  const [calls, coverage] = await Promise.all([getVesselCalls(), getCoverage()]);
+
+  const asOf = calls.reduce(
+    (max, c) => (c.source === "live" && c.last_seen && c.last_seen > max ? c.last_seen : max),
+    ""
+  );
+  const firstMonth = (port: string, source?: string) =>
+    coverage
+      .filter((c) => c.port === port && (!source || c.source === source))
+      .map((c) => c.month)
+      .sort()[0];
+  const pqStart = firstMonth("PQ");
+  const kptLiveStart = firstMonth("KPT", "live");
+  // Months since the start of the record that are not fully observed: either
+  // some daily reports are missing, or none exist at all.
+  const complete = new Set(
+    coverage.filter((c) => c.port === "PQ" && c.is_complete === 1).map((c) => c.month)
+  );
+  const gaps: string[] = [];
+  if (pqStart && asOf) {
+    for (let m = pqStart; m < asOf.slice(0, 7); m = addMonths(m, 1)) {
+      if (!complete.has(m)) gaps.push(m);
+    }
+  }
 
   const stats = [
-    { label: "Shipping Records Analyzed", value: rows.length.toLocaleString("en-US") },
-    { label: "Commodity Categories Tracked", value: categories.length.toString() },
-    { label: "Deep-Water Ports Covered", value: "2" },
+    { label: "Vessel calls on record", value: calls.length.toLocaleString("en-US") },
+    { label: "History from", value: pqStart ? pqStart.slice(0, 4) : "-" },
+    { label: "Listed sectors mapped", value: String(SECTORS.length) },
+  ];
+
+  const sections: { title: string; body: React.ReactNode }[] = [
+    {
+      title: "What this is",
+      body: (
+        <>
+          Port Qasim Authority and Karachi Port Trust each publish a daily statement of the
+          vessels in port: what each carries, how much, where it came from, and where it is
+          berthed. Almost all of Pakistan&apos;s bulk trade in coal, fuels, edible oil, oilseeds,
+          fertilizer, steel and cement crosses those two ports. We read every statement, every
+          night, and turn it into one consistent record of vessel calls, mapped to the listed
+          sectors each cargo matters to.
+        </>
+      ),
+    },
+    {
+      title: "How volumes are counted",
+      body: (
+        <>
+          A vessel appears in the daily statements for every day it is in port, so adding up
+          the statements would count the same cargo many times. We follow each vessel from
+          arrival to departure and count its declared cargo once, on its arrival date. A monthly
+          figure here is therefore cargo that arrived in that month. The extraction is checked
+          every night against the ports&apos; own control totals before anything is published.
+        </>
+      ),
+    },
+    {
+      title: "Why it is early",
+      body: (
+        <>
+          Official trade statistics and industry association releases arrive two to six weeks
+          after month end. A vessel appears here the day after it reaches port limits, and cargo
+          waiting at anchorage is visible before it has been discharged at all. The{" "}
+          <Link href="/vessels" className="underline">
+            vessel line-up
+          </Link>{" "}
+          is the forward view; the{" "}
+          <Link href="/report" className="underline">
+            weekly note
+          </Link>{" "}
+          is the summary.
+        </>
+      ),
+    },
+    {
+      title: "Coverage",
+      body: (
+        <>
+          Port Qasim: vessel calls from {pqStart ? formatMonth(pqStart) : "2019"} to date. Karachi
+          Port: tonnage-handled data from {kptLiveStart ? formatMonth(kptLiveStart) : "March 2026"}{" "}
+          to date. Year-on-year comparisons are made only between periods measured the same way,
+          which for now means Port Qasim alone; those figures carry a <sup>PQ</sup> mark. Where a
+          cargo moves mainly through Karachi, no year-on-year figure is shown rather than a
+          misleading one.
+          {gaps.length > 0 && (
+            <>
+              {" "}
+              {gaps.length} months in that record have missing or incomplete source reports
+              (the longest gap runs from mid-2022 to early 2023). They are marked in charts and
+              excluded from comparisons.
+            </>
+          )}
+        </>
+      ),
+    },
+    {
+      title: "What it cannot tell you",
+      body: (
+        <>
+          The statements name the shipping agent, not the importer, so a cargo cannot be
+          attributed to a single company except where a terminal has one user. Containerised
+          cargo is reported as boxes, not by commodity, so scrap steel, basmati rice and
+          machinery are not visible. LNG is counted in cargoes because its volume is recorded
+          inconsistently. Tonnage is as declared by the vessel and can differ slightly from the
+          final outturn. Tickers indicate sector exposure and are not investment advice.
+        </>
+      ),
+    },
+    {
+      title: "Who uses it",
+      body: (
+        <>
+          Sell-side and buy-side analysts covering cement, energy, fertilizer, steel, chemicals
+          and consumer staples who want a volume read before the official number, and a record
+          they can back-test against reported results.
+        </>
+      ),
+    },
   ];
 
   return (
-    <div className="flex flex-col w-full gap-xl max-w-3xl">
+    <div className="flex flex-col w-full gap-xl max-w-3xl pb-xl">
       <section className="flex flex-col gap-sm">
         <span className="font-label-caps text-label-caps text-secondary uppercase tracking-widest">
-          About Us
+          Methodology
         </span>
         <h1 className="font-display-lg text-display-lg text-on-surface leading-none">
-          Transforming Maritime Activity Into Real-Time Market Intelligence
+          Port cargo data, built for equity research
         </h1>
         <p className="font-body-lg text-body-lg text-on-surface-variant mt-md">
-          Over 90% of Pakistan&apos;s international trade volume flows through its deep-water
-          gateways. PAK Trade Flow exists to bring immediate, unified visibility to this massive
-          economic engine, transforming fragmented daily port activities into a single,
-          cohesive view of the market.
+          Every vessel call at Pakistan&apos;s two main ports, counted once and mapped to the
+          listed companies it affects.
         </p>
       </section>
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-md">
         {stats.map((s) => (
-          <div
-            key={s.label}
-            className="bg-surface-container-lowest rounded-xl shadow-sm p-lg text-center"
-          >
+          <div key={s.label} className="bg-surface-container-lowest rounded-xl shadow-sm p-lg text-center">
             <p className="font-display-lg text-display-lg text-on-surface">{s.value}</p>
-            <p className="font-label-caps text-label-caps text-outline uppercase mt-xs">
-              {s.label}
-            </p>
+            <p className="font-label-caps text-label-caps text-outline uppercase mt-xs">{s.label}</p>
           </div>
         ))}
       </section>
 
-      <section className="bg-surface-container-lowest rounded-xl shadow-sm p-lg flex flex-col gap-md">
-        <h3 className="font-headline-md text-headline-md text-on-surface">The Problem</h3>
-        <p className="font-body-md text-body-md text-on-surface-variant">
-          Despite the fact that nearly all of the nation&apos;s inbound and outbound
-          commodities pass through Port Qasim and Karachi Port Trust, gaining a real-time,
-          holistic picture of these movements has historically been an opaque process. Data
-          regarding critical supply lines—from energy sectors to agriculture—often remains
-          siloed and disconnected. Market participants are frequently left navigating delayed,
-          fragmented reports, making it incredibly difficult to spot macro trends, anticipate
-          supply shifts, or answer critical strategic questions when time is of the essence.
-        </p>
-      </section>
-
-      <section className="bg-surface-container-lowest rounded-xl shadow-sm p-lg flex flex-col gap-md">
-        <h3 className="font-headline-md text-headline-md text-on-surface">Our Approach</h3>
-        <p className="font-body-md text-body-md text-on-surface-variant">
-          We believe that clarity drives better market decisions. By intelligently aggregating
-          and standardizing daily maritime activities across Pakistan&apos;s primary ports, we
-          provide a transparent, unified view of national commodity flows. We focus on accuracy
-          and standardization over assumptions, delivering a high-fidelity intelligence hub that
-          reflects the true, real-time state of the market so you can act with confidence.
-        </p>
-      </section>
-
-      <section className="bg-surface-container-lowest rounded-xl shadow-sm p-lg flex flex-col gap-md">
-        <h3 className="font-headline-md text-headline-md text-on-surface">Who It&apos;s For</h3>
-        <p className="font-body-md text-body-md text-on-surface-variant">
-          Designed for strategic decision-makers: commodity traders, supply chain executives,
-          financial market analysts, and logistics planners who require an immediate, clear
-          read on macroeconomic maritime movements to maintain their competitive edge.
-        </p>
-      </section>
+      {sections.map((s) => (
+        <section
+          key={s.title}
+          className="bg-surface-container-lowest rounded-xl shadow-sm p-lg flex flex-col gap-sm"
+        >
+          <h2 className="font-headline-md text-headline-md text-on-surface">{s.title}</h2>
+          <p className="font-body-md text-body-md text-on-surface-variant">{s.body}</p>
+        </section>
+      ))}
 
       <p className="font-label-caps text-label-caps text-outline uppercase">
-        Data as of {formatDateShort(latestReportDate)}
+        Data to {formatDateLong(asOf)}
       </p>
     </div>
   );

@@ -20,3 +20,6 @@ npm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local data snapshot (the data product itself: never commit)
+/.data/

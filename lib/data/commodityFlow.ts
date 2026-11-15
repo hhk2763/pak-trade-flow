@@ -1,47 +1,16 @@
 import "server-only";
-import { unstable_cache } from "next/cache";
-import { supabaseServer } from "@/lib/supabase/server";
+import { fetchTable } from "@/lib/data/source";
 import type { CommodityFlowRow } from "@/lib/types/database";
 import { categoryImportKey, categoryExportKey, formatDateRange } from "@/lib/format";
 
-const PAGE_SIZE = 1000;
-
-/**
- * PostgREST caps responses at 1,000 rows per request, and commodity_flow
- * grows daily via the user's ETL pipeline — so this paginates until a page
- * comes back short rather than assuming a fixed row count.
- */
-async function fetchAllCommodityFlowRows(): Promise<CommodityFlowRow[]> {
-  const rows: CommodityFlowRow[] = [];
-  let offset = 0;
-
-  while (true) {
-    const { data, error } = await supabaseServer
-      .from("commodity_flow")
-      .select("*")
-      .range(offset, offset + PAGE_SIZE - 1);
-
-    if (error) {
-      throw new Error(`Failed to fetch commodity_flow: ${error.message}`);
-    }
-    if (!data || data.length === 0) break;
-
-    rows.push(...data);
-    if (data.length < PAGE_SIZE) break;
-    offset += PAGE_SIZE;
-  }
-
-  return rows;
+// Daily-grain rows: a vessel appears once for every day it is in port. Use
+// this table for "tonnage worked per day" (weight_24h_mt). For "cargo that
+// arrived", use vessel_calls (lib/data/vesselCalls.ts) -- one row per call.
+//
+// Cached in memory for an hour by fetchTable; the ETL refreshes once a day.
+export function getAllCommodityFlow(): Promise<CommodityFlowRow[]> {
+  return fetchTable<CommodityFlowRow>({ table: "commodity_flow", orderBy: "id" });
 }
-
-// Revalidated hourly: the underlying ETL only refreshes once a day, but this
-// keeps the site responsive to same-day corrections without querying on
-// every request.
-export const getAllCommodityFlow = unstable_cache(
-  fetchAllCommodityFlowRows,
-  ["commodity-flow-all"],
-  { revalidate: 3600, tags: ["commodity-flow"] }
-);
 
 // commodity_flow.weight_24h_mt is only populated for ~33% of PQ rows (KPT is
 // 100%). Every aggregate below sums weight_24h_mt treating missing values as
