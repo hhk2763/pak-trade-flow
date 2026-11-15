@@ -8,7 +8,10 @@ import { formatMt } from "@/lib/format";
 import type { PortComparison } from "@/lib/data/commodityFlow";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Dashboard", icon: "dashboard" },
+  { href: "/", label: "Sector Monitor", icon: "monitoring" },
+  { href: "/vessels", label: "Vessel Line-up", icon: "directions_boat" },
+  { href: "/report", label: "Weekly Note", icon: "article" },
+  { href: "/daily", label: "Daily Activity", icon: "dashboard" },
   { href: "/commodity-flows", label: "Commodity Flows", icon: "oil_barrel" },
   { href: "/market-trends", label: "Market Trends", icon: "trending_up" },
 ];
@@ -28,13 +31,15 @@ export function Sidebar({
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col border-r border-outline-variant">
+    <aside className="print:hidden fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col border-r border-outline-variant">
       <div className="px-lg py-xl flex items-center gap-sm">
         <Logo />
       </div>
       <nav className="px-md space-y-xs">
         {NAV_ITEMS.map((item) => {
-          const active = pathname === item.href;
+          // Sector detail pages live under the Sector Monitor.
+          const active =
+            pathname === item.href || (item.href === "/" && pathname.startsWith("/sectors"));
           return (
             <Link
               key={item.href}

@@ -1,58 +1,62 @@
 # PAK Trade Flow
 
-**A commodity flow & trade intelligence dashboard for Pakistan's two major deep-water ports — Port Qasim (PQ) and Karachi Port Trust (KPT).**
+**Port cargo data for Pakistan equity research.** Every vessel call at Port Qasim (PQ) and Karachi Port (KPT), counted once and mapped to the listed sectors it matters to. Updated nightly, with history back to 2019.
 
 ## What it does & the problem it solves
 
-Every day, Port Qasim and Karachi Port Trust each publish their own raw cargo statements — daily tonnage PDFs and outer-anchorage Excel sheets listing every vessel, its cargo, and whether it's importing or exporting. That data exists, but nobody can *see* it: it's scattered across dozens of per-day files, in inconsistent formats, with no unified view of what's actually moving through the country's ports.
+Port Qasim Authority and Karachi Port Trust each publish a daily statement of the vessels in port: what each carries, how much, where it came from and where it is berthed. Almost all of Pakistan's bulk trade in coal, fuels, edible oil, oilseeds, fertilizer, steel and cement crosses those two ports, but the statements are PDFs in inconsistent layouts, and a vessel is repeated for every day it stays in port.
 
-**PAK Trade Flow** turns that raw daily paperwork (already parsed and loaded into a Postgres database by a companion ETL pipeline) into a single, live, queryable dashboard. It answers the questions a trade analyst, logistics planner, or port operations stakeholder actually has:
+A companion ETL pipeline parses those statements every night and follows each vessel from arrival to departure, so its cargo is counted **once**. This app turns that record into the questions an equity analyst asks:
 
-- What commodities dominate import/export volume right now, and how is that shifting week to week?
-- Is a given port import-heavy or export-heavy, and by how much?
-- Which terminal at Port Qasim is handling the most cargo?
-- How has daily volume for a specific commodity (coal, petroleum, LPG, etc.) trended over the last few months?
+- How much coal, palm oil, petrol or steel coil arrived last month, and how does that compare with the month before and a year earlier?
+- What is waiting at anchorage right now, i.e. what lands in inventories over the next fortnight?
+- Where is the cargo coming from, and which vessels brought it?
 
-**Who it's for:** trade/logistics analysts, port operations teams, and anyone who needs a fast, real-numbers read on Pakistan's maritime commodity flow without manually reading PDFs.
+Official trade statistics and industry releases arrive two to six weeks after month end. A vessel appears here the day after it reaches port.
+
+**Who it's for:** sell-side and buy-side analysts covering cement, energy, fertilizer, steel, chemicals and consumer staples.
 
 ## Live Demo
 
-
 **[ 🔗 https://pak-trade-flow.vercel.app/ ]**
+
+A sample of the weekly note is checked in at [`docs/sample-weekly-note.pdf`](docs/sample-weekly-note.pdf).
 
 ## Features
 
-**Dashboard** (`/`)
-- Executive KPIs: total import & export volume for the **trailing 7 days**, with week-over-week and month-over-month % change, clearly labeled with the exact date range. MoM compares the same 7-day window against the equivalent week four weeks back, so it's a same-length comparison rather than a week measured against a full month
-- Live "Data as of" freshness badge showing the latest report date in the database
-- Top Commodities — every category with real reported volume, **each one clickable**, jumping straight to that category's trend on the Market Trends page
-- Recent Shipments feed — the latest real vessel calls (ship name, commodity, port/terminal, tonnage, import/export)
-- Animated count-up numbers on all KPI cards
+**Sector Monitor** (`/`)
+- Nine listed sectors (cement, oil refining & marketing, LNG & LPG, edible oil & oilseeds, steel, fertilizer, chemicals, rice/wheat, port terminals), each with its tickers and the cargo flows that drive it
+- Per flow: last full month, month-on-month, year-on-year, a two-year monthly sparkline, and cargo currently waiting at anchorage
+- Sector definitions live in one file, `lib/sectors.ts`
 
-**Commodity Flows** (`/commodity-flows`)
-- Volume-by-category bar chart across all 13+ tracked commodity categories (coal, petroleum, LPG/LNG, oilseeds, edible oil, containers, cement, chemicals, steel, and more)
-- Import vs Export split, compared side-by-side for KPT and Port Qasim
-- Port Qasim terminal drill-down (PIBT, FAP, FOTCO, M/W, HFP&S, etc.), with an honest data-quality note when a large share of rows have no terminal recorded
+**Sector detail** (`/sectors/[slug]`)
+- Monthly arrivals chart (2 years / 4 years / all, back to 2019), with a table view
+- Last 3 months vs a year earlier, month-to-date vs the same days of the prior month
+- Origin (or destination) country mix over the last 12 months
+- Vessels in port now for that flow, and the latest vessel calls
 
-**Market Trends** (`/market-trends`)
-- Daily volume trend line chart spanning the full data history
-- Toggle between "All Categories" and any single commodity — **both Import and Export lines are always shown and color-coded**, so direction is never lost even when drilling into one commodity
-- Deep-linkable via `?category=` — the Dashboard's commodity links land here pre-filtered
-- 7-day import/export volume stat cards with WoW and MoM % change
+**Vessel Line-up** (`/vessels`)
+- Every vessel at anchorage or at berth today: cargo, tonnage, tonnage left to work, days in port, origin. Filter by status, port and cargo
+
+**Weekly Note** (`/report`)
+- A print-ready note: what moved, a scorecard per sector, the anchorage queue and the week's largest arrivals. "Save as PDF" prints it to A4
+- Every sentence is assembled in code from computed figures (`lib/report.ts`); no language model writes it
+
+**Daily Activity, Commodity Flows, Market Trends** (`/daily`, `/commodity-flows`, `/market-trends`)
+- The original daily-tonnage views: 7-day import/export KPIs, volume by category, port comparison, Port Qasim terminal drill-down, and the daily trend chart
+
+**Honest comparisons**
+- A month with missing source reports is drawn lighter and excluded from comparisons
+- Year-on-year is only shown between periods measured the same way. Karachi Port data on the current basis starts in March 2026, so for now year-on-year is calculated on Port Qasim alone and marked <sup>PQ</sup>; where a cargo moves mainly through Karachi, no figure is shown
 
 **Lead capture & access gating** (`components/gating/`)
-- The Recent Shipments feed shows the **first 2 rows free** — enough to prove the data is real — then blurs the rest behind an "Unlock Access" overlay. The Market Trends chart is gated the same way
-- A form collects name, work email, primary commodity interest (the lead-qualification signal), an optional message, and an opt-in for the weekly AI briefing. Submissions POST to `/api/lead`, which forwards them to a Google Apps Script webhook that appends to a spreadsheet
-- Unlock state persists in `localStorage`; the same form powers `/contact` via `/api/contact`
+- The first rows of the vessel line-up and of each "latest vessel calls" table are free; the rest is blurred behind an "Unlock Access" overlay, as are the Recent Shipments feed and Market Trends chart
+- A form collects name, work email, primary commodity interest, an optional message, and an opt-in for the weekly AI briefing. Submissions POST to `/api/lead`, which forwards them to a Google Apps Script webhook that appends to a spreadsheet
+- Unlock state persists in `localStorage`; the same form powers `/contact` ("Request a Pilot") via `/api/contact`
 - **This is a marketing gate, not access control.** The gated rows are already in the server-rendered HTML and merely blurred with CSS, so anyone reading the page source can see them. It exists to convert visitors, not to protect data.
 
 **AI Weekly Trade Briefing**
-- A short weekly narrative of commodity flow, generated from code-computed figures and emailed to subscribers. See [the section below](#ai-feature-weekly-trade-briefing) for the architecture, and `docs/sample-briefing.md` for a real generated example
-
-**Design**
-- Custom Material Design 3–inspired theme (colors, type scale, spacing) ported from the original Stitch design mockups
-- Branded animated ship/pulse-line logo, hand-built as an SVG React component
-- Fully server-rendered with hourly data revalidation (no stale client-side caching)
+- A short weekly narrative emailed to subscribers, generated from code-computed figures. See [the section below](#ai-feature-weekly-trade-briefing)
 
 ## AI Feature: Weekly Trade Briefing
 
@@ -147,18 +151,21 @@ Sending an OpenRouter key to `api.deepseek.com` returns a bare `401 Authenticati
 | Charts | **Recharts** |
 | Database / Backend | **Supabase** (hosted Postgres + PostgREST), queried server-side only via `@supabase/supabase-js` with a service-role key |
 | Data source | A companion ETL pipeline that parses daily PQ/KPT cargo PDFs & spreadsheets into the `commodity_flow` Postgres table this app reads |
-| Hosting (build/dev) | Local Node.js dev server (deployment target TBD — see Live Demo) |
+| Hosting | **Vercel** (see Live Demo) |
 
 ## Screenshots
 
-**Dashboard** — executive KPIs, recent shipments, and clickable top commodities
-![Dashboard](docs/screenshots/dashboard.jpg)
+**Sector Monitor** — cargo flows by listed sector
+![Sector Monitor](docs/screenshots/sector-monitor.jpg)
 
-**Commodity Flows** — volume by category and port-level import/export comparison
-![Commodity Flows](docs/screenshots/commodity-flows.jpg)
+**Sector detail** — monthly arrivals, origins, vessels in port
+![Sector detail](docs/screenshots/sector-detail.jpg)
 
-**Market Trends** — daily volume trend with Import/Export always distinguished
-![Market Trends](docs/screenshots/market-trends.jpg)
+**Vessel Line-up** — what is at anchorage and at berth today
+![Vessel Line-up](docs/screenshots/vessel-lineup.jpg)
+
+**Weekly Note** — the print-ready summary
+![Weekly Note](docs/screenshots/weekly-note.jpg)
 
 ## How to Run This Project
 
@@ -207,6 +214,27 @@ Open **http://localhost:3000**.
 npm run build
 npm start
 ```
+
+### Running without Supabase (local snapshot)
+
+The companion ETL can export the tables this app reads as JSON:
+
+```bash
+# in the ETL repo, after a pipeline run
+python -m etl.export_snapshot --out ../pak-trade-flow/.data
+```
+
+Then set `LOCAL_DATA_DIR=.data` in `.env.local` (and leave the Supabase variables empty). The app reads the JSON files instead of Supabase. `.data/` is gitignored: it is the data product itself and must never be committed to this public repository.
+
+### Tables this app reads
+
+| Table | Grain | Used by |
+|---|---|---|
+| `vessel_calls` | one row per vessel call and commodity line, 2019 to date | Sector Monitor, sector detail, Vessel Line-up, Weekly Note, Methodology |
+| `data_coverage` | days with a source report, per port per month | every comparison and chart on the pages above |
+| `commodity_flow` | one row per vessel per day in port | Daily Activity, Commodity Flows, Market Trends, AI briefing |
+
+`vessel_calls` and `data_coverage` are built by the ETL's `etl/marts.py`. If they do not exist yet, the pages that need them show a "data is being prepared" notice instead of failing.
 
 ### Expected `commodity_flow` schema
 

@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const TOP_LINKS = [
-  { href: "/", label: "Dashboard" },
-  { href: "/about", label: "About Us" },
-  { href: "/contact", label: "Contact Us" },
+  { href: "/", label: "Sector Monitor" },
+  { href: "/about", label: "Methodology" },
+  { href: "/contact", label: "Request a Pilot" },
 ];
 
 export function TopBar() {

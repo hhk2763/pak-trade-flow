@@ -39,7 +39,7 @@ export function ContactForm({ categories }: { categories: string[] }) {
           <span className="material-symbols-outlined">check</span>
         </div>
         <p className="font-headline-sm text-headline-sm text-on-surface">
-          Thanks — message sent.
+          Thanks, request received.
         </p>
         <p className="font-body-md text-body-md text-on-surface-variant">
           We&apos;ll get back to you shortly.
@@ -107,7 +107,7 @@ export function ContactForm({ categories }: { categories: string[] }) {
           onChange={(e) => setMessage(e.target.value)}
           rows={4}
           className="px-md py-sm rounded-lg border border-outline-variant bg-background font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary resize-none"
-          placeholder="What are you trying to track?"
+          placeholder="Which sectors or cargoes do you cover?"
         />
       </label>
 
@@ -130,7 +130,7 @@ export function ContactForm({ categories }: { categories: string[] }) {
         disabled={status === "submitting"}
         className="self-start mt-sm px-lg py-sm bg-primary text-on-primary rounded-full font-label-caps text-label-caps uppercase hover:opacity-90 transition-opacity disabled:opacity-50"
       >
-        {status === "submitting" ? "Sending…" : "Send Message"}
+        {status === "submitting" ? "Sending…" : "Request Pilot"}
       </button>
     </form>
   );

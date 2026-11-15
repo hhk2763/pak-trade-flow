@@ -11,14 +11,15 @@ export default async function ContactPage() {
     <div className="flex flex-col w-full gap-xl max-w-2xl">
       <section className="flex flex-col gap-sm">
         <span className="font-label-caps text-label-caps text-secondary uppercase tracking-widest">
-          Contact Us
+          Request a Pilot
         </span>
         <h1 className="font-display-lg text-display-lg text-on-surface leading-none">
-          Talk to Our Team
+          Try it on the sectors you cover
         </h1>
         <p className="font-body-lg text-body-lg text-on-surface-variant mt-md">
-          Tell us what you&apos;re trying to track and we&apos;ll get back to you — a specific
-          commodity, a port, or a custom report.
+          Tell us which sectors or cargoes you follow. A pilot gives your desk the weekly note,
+          the full vessel line-up and the history export for four weeks, so you can test it
+          against your own numbers before deciding.
         </p>
       </section>
 

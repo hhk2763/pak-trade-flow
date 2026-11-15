@@ -45,3 +45,21 @@
 .material-symbols-outlined {
   font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
 }
+
+/* The weekly note (/report) is designed to be saved as a PDF from the browser. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 13mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  .report {
+    max-width: none !important;
+  }
+  .break-inside-avoid {
+    break-inside: avoid;
+  }
+}
