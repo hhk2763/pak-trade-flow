@@ -24,6 +24,14 @@ export interface SeriesDef {
   unit: "mt" | "calls";
   /** One line an analyst can act on: why this number moves earnings. */
   why: string;
+  /**
+   * Set when the port statements are known to miss a large share of this
+   * flow. The flow is still shown, with this note, but never compared over
+   * time (no MoM, YoY or vs-trend figures) and never used in the weekly
+   * note's talking points: a percentage on a partial count reads as a fact
+   * about the market when it is a fact about the source.
+   */
+  coverageNote?: string;
 }
 
 export interface Sector {
@@ -101,6 +109,8 @@ export const SECTORS: Sector[] = [
         standards: ["GAS OIL", "HSD", "HIGH SPEED DIESEL"],
         unit: "mt",
         why: "Diesel demand follows freight and farm activity; import swings move marketer inventory gains.",
+        coverageNote:
+          "Most diesel import cargoes do not appear in the port statements we read: Karachi Port has recorded one since March 2026. These figures understate imports and are not compared over time.",
       },
       {
         key: "furnace-oil-exports",
@@ -206,11 +216,29 @@ export const SECTORS: Sector[] = [
     series: [
       {
         key: "dap-imports",
-        label: "DAP & fertilizer imports",
+        label: "DAP & other fertilizer imports",
         direction: "Import",
-        standards: ["DI AMMONIUM PHOSPHATE (DAP)", "DAP", "FERTILIZER", "UREA", "MURIATE OF POTASH (MOP)"],
+        // Every spelling the two ports have used. The history file and the
+        // live statements label the same cargo differently ("FERTILIZER (DAP)"
+        // vs "DI AMMONIUM PHOSPHATE (DAP)"), and a missing variant silently
+        // drops cargo from the sector.
+        standards: [
+          "DI AMMONIUM PHOSPHATE (DAP)",
+          "DAP",
+          "FERTILIZER (DAP)",
+          "FERTILIZER",
+          "FERTILIZER / UREA",
+          "UREA",
+          "MURIATE OF POTASH (MOP)",
+          "POTASH",
+          "AMMONIUM SULPHATE",
+          "AMMONIUM SULPHITE",
+          "AMMONIUM NITRATE",
+        ],
         unit: "mt",
         why: "Import arrivals before Rabi and Kharif determine whether the market is long or short.",
+        coverageNote:
+          "Port Qasim history before 2024 records almost no DAP cargoes, and current arrivals look low against national import figures. Treat this as a partial count; it is not compared over time.",
       },
       {
         key: "phos-acid-imports",
@@ -294,6 +322,17 @@ export const SECTORS: Sector[] = [
     ],
   },
 ];
+
+/**
+ * Commodities whose recorded tonnage cannot be trusted (LNG is mostly keyed in
+ * cubic metres). Derived from the series counted in cargoes, so the line-up,
+ * the weekly note and the sidebar treat them the same way the sector rows do.
+ */
+export const COUNT_ONLY_STANDARDS: ReadonlySet<string> = new Set(
+  SECTORS.flatMap((s) => s.series)
+    .filter((s) => s.unit === "calls")
+    .flatMap((s) => s.standards)
+);
 
 export function findSector(slug: string): Sector | undefined {
   return SECTORS.find((s) => s.slug === slug);

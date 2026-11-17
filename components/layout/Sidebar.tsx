@@ -4,8 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { DataFreshnessBadge } from "@/components/ui/DataFreshnessBadge";
-import { formatMt } from "@/lib/format";
-import type { PortComparison } from "@/lib/data/commodityFlow";
+import { formatDateShort, formatMeasure } from "@/lib/format";
+import type { ArrivalsWindow } from "@/lib/data/vesselCalls";
 
 const NAV_ITEMS = [
   { href: "/", label: "Sector Monitor", icon: "monitoring" },
@@ -22,10 +22,10 @@ const PORT_NAMES: Record<string, string> = {
 };
 
 export function Sidebar({
-  portComparison,
+  arrivals,
   latestReportDate,
 }: {
-  portComparison: PortComparison[];
+  arrivals: ArrivalsWindow | null;
   latestReportDate: string;
 }) {
   const pathname = usePathname();
@@ -58,10 +58,18 @@ export function Sidebar({
       </nav>
 
       <div className="flex-1 min-h-0 px-md pt-xl pb-md flex flex-col gap-sm overflow-y-auto">
-        <span className="font-label-caps text-label-caps text-outline uppercase px-sm">
-          Port Status
-        </span>
-        {portComparison.map((port) => (
+        {arrivals && (
+          <span className="flex flex-col gap-0.5 px-sm">
+            <span className="font-label-caps text-label-caps text-outline uppercase">
+              Cargo arrived · last 30 days
+            </span>
+            <span className="font-body-md text-[11px] text-on-surface-variant">
+              {formatDateShort(arrivals.from)} to {formatDateShort(arrivals.to)}, counted once
+              per vessel call
+            </span>
+          </span>
+        )}
+        {(arrivals?.ports ?? []).map((port) => (
           <div
             key={port.port}
             className="bg-surface-container-low rounded-lg p-md flex flex-col gap-sm"
@@ -76,9 +84,12 @@ export function Sidebar({
               </span>
             </div>
             <div className="flex items-center justify-between font-data-tabular text-data-tabular text-on-surface-variant">
-              <span>{formatMt(port.importMt)} MT in</span>
-              <span>{formatMt(port.exportMt)} MT out</span>
+              <span>{formatMeasure(port.importMt, "mt")} in</span>
+              <span>{formatMeasure(port.exportMt, "mt")} out</span>
             </div>
+            <span className="font-body-md text-[11px] text-on-surface-variant">
+              {port.calls} vessel call{port.calls === 1 ? "" : "s"}
+            </span>
           </div>
         ))}
       </div>

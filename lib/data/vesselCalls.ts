@@ -1,7 +1,7 @@
 import "server-only";
 import { fetchOptionalTable } from "@/lib/data/source";
 import type { CoverageRow, VesselCall } from "@/lib/types/database";
-import { SECTORS, type Sector, type SeriesDef } from "@/lib/sectors";
+import { COUNT_ONLY_STANDARDS, SECTORS, type Sector, type SeriesDef } from "@/lib/sectors";
 
 // Everything here works on vessel_calls: one row per vessel call, tonnage
 // counted once. That makes "cargo arrived in a month" a plain sum, which the
@@ -98,6 +98,19 @@ export function matchesSeries(call: VesselCall, series: SeriesDef): boolean {
     return false;
   }
   return true;
+}
+
+/**
+ * A call's tonnage, or null when the figure cannot be trusted: outliers (unit
+ * errors in the source) and commodities whose volume the ports record
+ * inconsistently (LNG, often in cubic metres). Use this wherever tonnes are
+ * shown or summed outside a series, so a 148,000 m3 LNG cargo is never
+ * presented as 148,000 tonnes.
+ */
+export function callTonnes(call: VesselCall): number | null {
+  if (call.is_outlier) return null;
+  if (COUNT_ONLY_STANDARDS.has((call.commodity_standard ?? "").toUpperCase())) return null;
+  return call.weight_mt;
 }
 
 function measure(call: VesselCall, unit: SeriesDef["unit"]): number {
@@ -232,6 +245,10 @@ function pct(current: number, previous: number): number | null {
 
 const PORT_LABEL: Record<string, string> = { PQ: "Port Qasim only", KPT: "Karachi Port only" };
 const NO_BASIS = "No like-for-like history yet";
+const PARTIAL: Comparison = {
+  pct: null,
+  basis: "Partial coverage: not compared over time",
+};
 
 function compare(
   idx: SeriesIndex,
@@ -343,19 +360,23 @@ function snapshotSeries(
     observed: cov.has(`PQ|${month}`) || cov.has(`KPT|${month}`),
   }));
 
+  // A partial count says nothing about direction: "-100% YoY" on diesel was
+  // missing reports, not a market that stopped importing.
+  const partial = Boolean(series.coverageNote);
+
   return {
     series,
     lastMonth,
     lastMonthValue: idx.value(lastMonth),
     lastMonthCalls: idx.callCount(lastMonth),
-    mom: compare(idx, cov, [lastMonth], [prevMonth]),
-    yoy: compare(idx, cov, [lastMonth], [yearAgo]),
+    mom: partial ? PARTIAL : compare(idx, cov, [lastMonth], [prevMonth]),
+    yoy: partial ? PARTIAL : compare(idx, cov, [lastMonth], [yearAgo]),
     t3mValue: t3m.reduce((s, m) => s + idx.value(m), 0),
-    t3mYoy: compare(idx, cov, t3m, t3mPrev),
+    t3mYoy: partial ? PARTIAL : compare(idx, cov, t3m, t3mPrev),
     mtdMonth,
     mtdDays,
     mtdValue: mtd.value,
-    mtdPct: pct(mtd.value, prevMtd.value),
+    mtdPct: partial ? null : pct(mtd.value, prevMtd.value),
     weekValue: week.value,
     weekCalls: week.calls,
     prevWeekValue: prevWeek.value,
@@ -402,8 +423,8 @@ function toLineupRow(c: VesselCall, asOf: string): LineupRow {
     commodity: titleCase(c.commodity_standard ?? "Unknown"),
     category: c.commodity_category ?? "Other",
     direction: c.imp_exp,
-    weightMt: c.is_outlier ? null : c.weight_mt,
-    balanceMt: c.balance_mt,
+    weightMt: callTonnes(c),
+    balanceMt: callTonnes(c) == null ? null : c.balance_mt,
     origin: c.imp_exp === "Export" ? c.destination_country : c.origin_country,
     terminal: c.terminal,
     arrivalDate: c.arrival_date,
@@ -427,6 +448,49 @@ export function getLineup(calls: VesselCall[], series?: SeriesDef): LineupRow[] 
         a.status.localeCompare(b.status) * -1 || // waiting first
         (b.weightMt ?? 0) - (a.weightMt ?? 0)
     );
+}
+
+// ---------------------------------------------------------------------------
+// Port arrivals (sidebar): the same per-call counting as every other figure
+// ---------------------------------------------------------------------------
+
+export interface PortArrivals {
+  port: string;
+  calls: number;
+  importMt: number;
+  exportMt: number;
+}
+
+export interface ArrivalsWindow {
+  from: string;
+  to: string;
+  ports: PortArrivals[];
+}
+
+/**
+ * Cargo that arrived at each port over the last `days` days, counted once per
+ * vessel call. Replaces the old sidebar figure, which summed daily tonnage
+ * handled since March 2026 from commodity_flow with no period shown, and so
+ * disagreed with every other number on the site.
+ */
+export function getPortArrivals(calls: VesselCall[], days = 30): ArrivalsWindow | null {
+  const to = latestReportDate(calls);
+  if (!to) return null;
+  const from = shiftDays(to, -(days - 1));
+  const byPort = new Map<string, PortArrivals>();
+  for (const port of ["KPT", "PQ"]) {
+    byPort.set(port, { port, calls: 0, importMt: 0, exportMt: 0 });
+  }
+  for (const c of calls) {
+    if (!c.arrival_date || c.arrival_date < from || c.arrival_date > to) continue;
+    const entry = byPort.get(c.port);
+    if (!entry) continue;
+    entry.calls += 1;
+    const t = callTonnes(c) ?? 0;
+    if (c.imp_exp === "Import") entry.importMt += t;
+    else if (c.imp_exp === "Export") entry.exportMt += t;
+  }
+  return { from, to, ports: Array.from(byPort.values()) };
 }
 
 // ---------------------------------------------------------------------------
@@ -461,7 +525,7 @@ export function getRecentCalls(
       port: c.port,
       arrivalDate: c.arrival_date!,
       commodity: titleCase(c.commodity_standard ?? "Unknown"),
-      weightMt: c.is_outlier ? null : c.weight_mt,
+      weightMt: callTonnes(c),
       counterparty: series.direction === "Export" ? c.destination_country : c.origin_country,
       terminal: c.terminal,
       agent: c.agent,

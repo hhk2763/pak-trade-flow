@@ -85,6 +85,17 @@ the ETL's `etl/commodity_map.py`, upper case. Pages, the weekly note and
 static params are all generated from that list. Tickers are an editorial
 judgement: check them against the current PSX listing before publishing.
 
+A flow the port statements only partly capture gets a `coverageNote`. It is
+then shown with that caveat but never compared (no MoM/YoY/vs-trend) and kept
+out of the weekly note's talking points. Diesel and DAP carry one today; remove
+it only after the counts have been checked against OCAC/NFDC figures. When a
+sector drops cargo, look for spelling variants of `commodity_standard`
+(history and live label the same cargo differently) before blaming the source.
+
+Tonnage shown outside a series goes through `callTonnes()`, which drops
+outliers and LNG (keyed in cubic metres), so the line-up, the weekly note and
+the sidebar never present LNG volume as tonnes.
+
 ## Gotchas
 
 - **Marts may not exist yet.** `fetchOptionalTable` returns `[]` when

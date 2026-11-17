@@ -1,5 +1,6 @@
 import {
   buildMarketSnapshot,
+  callTonnes,
   cleanShipName,
   getCoverage,
   getLineup,
@@ -61,6 +62,7 @@ export default async function WeeklyNotePage() {
     .sort((a, b) => (b.weightMt ?? 0) - (a.weightMt ?? 0))
     .slice(0, 10);
 
+  // callTonnes drops outliers and LNG, whose "tonnes" are often cubic metres.
   const arrivals = calls
     .filter(
       (c) =>
@@ -68,12 +70,16 @@ export default async function WeeklyNotePage() {
         c.arrival_date &&
         c.arrival_date >= weekStart &&
         c.arrival_date <= market.asOf &&
-        c.weight_mt != null &&
-        !c.is_outlier &&
+        callTonnes(c) != null &&
         c.commodity_category !== "Containers"
     )
-    .sort((a, b) => (b.weight_mt ?? 0) - (a.weight_mt ?? 0))
+    .sort((a, b) => (callTonnes(b) ?? 0) - (callTonnes(a) ?? 0))
     .slice(0, 10);
+
+  const partialFlows = market.sectors
+    .flatMap((s) => s.series)
+    .filter((s) => s.series.coverageNote)
+    .map((s) => s.series.label);
 
   // Numbers never wrap; only the first (label) column may.
   const th = "py-1.5 pr-3 font-normal text-right whitespace-nowrap first:text-left";
@@ -151,10 +157,15 @@ export default async function WeeklyNotePage() {
             <tbody>
               {series.map((s) => (
                 <tr key={s.series.key} className="border-t border-outline-variant/60">
-                  <td className={td}>{s.series.label}</td>
+                  <td className={td}>
+                    {s.series.label}
+                    {s.series.coverageNote ? <sup className="text-outline"> †</sup> : null}
+                  </td>
                   <td className={td}>{cell(s.weekValue, s.series.unit)}</td>
                   <td className={td}>
-                    <Change value={pct(s.weekValue, s.avg4wValue)} />
+                    <Change
+                      value={s.series.coverageNote ? null : pct(s.weekValue, s.avg4wValue)}
+                    />
                   </td>
                   <td className={td}>{cell(s.mtdValue, s.series.unit)}</td>
                   <td className={td}>
@@ -236,7 +247,7 @@ export default async function WeeklyNotePage() {
                     {titleCase(c.commodity_standard ?? "")}
                     <span className="text-outline"> · {c.port === "PQ" ? "PQ" : "KPT"}</span>
                   </td>
-                  <td className={td}>{formatMt(c.weight_mt ?? 0)}</td>
+                  <td className={td}>{formatMt(callTonnes(c) ?? 0)}</td>
                   <td className={td}>{formatDateShort(c.arrival_date!)}</td>
                 </tr>
               ))}
@@ -262,6 +273,13 @@ export default async function WeeklyNotePage() {
           basmati rice and other boxed goods are outside this note. Company tickers indicate
           sector exposure and are not investment advice.
         </p>
+        {partialFlows.length > 0 && (
+          <p>
+            <strong>† Partial coverage.</strong> The port statements miss a large share of{" "}
+            {partialFlows.join(" and ")}. Those rows are shown for reference only: they understate
+            the market and carry no comparisons.
+          </p>
+        )}
       </footer>
     </article>
   );

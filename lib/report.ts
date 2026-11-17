@@ -22,8 +22,9 @@ function pct(current: number, previous: number): number | null {
 
 export function buildTakeaways(market: MarketSnapshot, lineup: LineupRow[]): Takeaway[] {
   const series = market.sectors.flatMap((s) => s.series).filter((s) => s.series.unit === "mt");
-  // The terminal series repeats coal; keep it out of the commentary.
-  const flows = series.filter((s) => !s.series.terminals);
+  // The terminal series repeats coal; keep it out of the commentary. Flows the
+  // ports only partly report make no headlines: their moves are source noise.
+  const flows = series.filter((s) => !s.series.terminals && !s.series.coverageNote);
   const out: Takeaway[] = [];
 
   const movers = flows

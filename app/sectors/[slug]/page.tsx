@@ -82,6 +82,16 @@ export default async function SectorDetailPage({ params }: { params: { slug: str
               <p className="font-body-md text-body-md text-on-surface-variant max-w-3xl">
                 {s.series.why}
               </p>
+              {s.series.coverageNote && (
+                <p className="mt-xs flex gap-sm rounded-lg bg-surface-container-low p-md font-body-md text-[13px] text-on-surface max-w-3xl">
+                  <span className="material-symbols-outlined text-[18px] text-outline" aria-hidden>
+                    info
+                  </span>
+                  <span>
+                    <strong>Partial coverage.</strong> {s.series.coverageNote}
+                  </span>
+                </p>
+              )}
             </header>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-md">

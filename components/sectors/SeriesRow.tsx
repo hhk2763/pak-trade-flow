@@ -15,15 +15,20 @@ export function SeriesRow({ snap }: { snap: SeriesSnapshot }) {
           {snap.series.direction} · {formatMonthShort(snap.lastMonth)} · {snap.lastMonthCalls} call
           {snap.lastMonthCalls === 1 ? "" : "s"}
         </span>
+        {snap.series.coverageNote && <PartialBadge note={snap.series.coverageNote} />}
       </div>
       <div className="col-span-6 md:col-span-3 flex flex-col gap-0.5">
         <span className="font-headline-md text-headline-md text-on-surface font-data-tabular">
           {formatMeasure(snap.lastMonthValue, unit)}
         </span>
-        <span className="flex flex-wrap gap-x-md">
-          <Delta pct={snap.mom.pct} label="MoM" basis={snap.mom.basis} />
-          <Delta pct={snap.yoy.pct} label="YoY" basis={snap.yoy.basis} />
-        </span>
+        {snap.series.coverageNote ? (
+          <span className="font-data-tabular text-data-tabular text-outline">Not compared</span>
+        ) : (
+          <span className="flex flex-wrap gap-x-md">
+            <Delta pct={snap.mom.pct} label="MoM" basis={snap.mom.basis} />
+            <Delta pct={snap.yoy.pct} label="YoY" basis={snap.yoy.basis} />
+          </span>
+        )}
       </div>
       <div className="col-span-6 md:col-span-3">
         <Sparkline points={snap.history.slice(-24)} />
@@ -39,5 +44,20 @@ export function SeriesRow({ snap }: { snap: SeriesSnapshot }) {
         </span>
       </div>
     </div>
+  );
+}
+
+/** Flags a flow the port statements only partly report; the note is the tooltip. */
+export function PartialBadge({ note }: { note: string }) {
+  return (
+    <span
+      className="mt-0.5 inline-flex w-fit items-center gap-0.5 rounded-full bg-surface-container px-sm py-0.5 font-label-caps text-[10px] uppercase text-on-surface-variant"
+      title={note}
+    >
+      <span className="material-symbols-outlined text-[13px]" aria-hidden>
+        info
+      </span>
+      Partial coverage
+    </span>
   );
 }
