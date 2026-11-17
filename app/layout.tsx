@@ -5,10 +5,10 @@ import { TopBar } from "@/components/layout/TopBar";
 import { LeadGateProvider } from "@/components/gating/LeadGateProvider";
 import {
   getAllCommodityFlow,
-  getPortComparison,
   getHeroKpis,
   getCategoryTotals,
 } from "@/lib/data/commodityFlow";
+import { getPortArrivals, getVesselCalls } from "@/lib/data/vesselCalls";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -32,8 +32,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const rows = await getAllCommodityFlow();
-  const portComparison = getPortComparison(rows);
+  const [rows, calls] = await Promise.all([getAllCommodityFlow(), getVesselCalls()]);
+  // Same per-call counting as the sector pages, over a stated window.
+  const arrivals = getPortArrivals(calls, 30);
   const { latestReportDate } = getHeroKpis(rows);
   const categories = getCategoryTotals(rows)
     .filter((c) => c.totalMt > 0)
@@ -49,7 +50,7 @@ export default async function RootLayout({
       </head>
       <body className="bg-background font-body-md text-on-surface">
         <LeadGateProvider categories={categories}>
-          <Sidebar portComparison={portComparison} latestReportDate={latestReportDate} />
+          <Sidebar arrivals={arrivals} latestReportDate={latestReportDate} />
           <div className="pl-72 print:pl-0">
             <div className="print:hidden">
               <TopBar />
